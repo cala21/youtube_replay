@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=400px height=200px src="./img/youtube_replay.png" alt="Project logo"></a>
+ <img width=400px height=200px src="./app/assets/youtube_replay.png" alt="Project logo"></a>
 </p>
 
 <h3 align="center">YouTube Replay</h3>
