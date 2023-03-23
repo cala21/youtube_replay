@@ -1,1 +1,7 @@
 python_env/
+keys.config
+github
+watch-history.json
+.DS_Store
+Takeout/*
+*.pyc

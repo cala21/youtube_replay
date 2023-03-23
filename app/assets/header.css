@@ -1,0 +1,33 @@
+.app-header {
+    height: 100px;
+    line-height: 100%;
+    border-bottom: thin lightgrey solid;
+    background: #f8f7f6;
+    color: white;
+}
+
+.app-header .title {
+    font-size: 22px;
+    text-align: center;
+    display: flex;
+    font-weight: bold; 
+    font-size: 2em;
+    background: repeating-linear-gradient(
+        35deg,
+        hsl(343 100% 50%) 0px 2px,
+        hsl(23 100% 50%) 0px 4px
+      );
+}
+
+.nav-link {
+    font-weight: bold; 
+    font-size: 1.3em;
+    text-align: center;
+}
+
+.DateRangePickerInput_arrow_svg, .DateRangePickerInput_arrow_svg_1 {
+    Height: 10px !important;
+    Width: 10px !important;
+}
+
+  

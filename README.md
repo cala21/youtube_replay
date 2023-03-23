@@ -20,7 +20,7 @@
     <br> 
 </p>
 
-## Table of Contents
+## **Table of Contents**
 
 - [About](#about)
 - [Getting Started](#getting_started)
@@ -31,37 +31,55 @@
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgement)
 
-## About <a name = "about"></a>
+## **About <a name = "about"></a>**
 
-YouTube Replay is an interactive data visualization tool for YouTube users to get information and useful insights on their YouTube Watch History.
+YouTube Replay is an interactive data visualization tool for YouTube users to get information and useful insights on their YouTube Watch History. It leverages the [Youtube API](https://developers.google.com/youtube/v3/docs) to dynamically analyze the user history with respect to :
 
-## Getting Started <a name = "getting_started"></a>
+* advertisements consumed
+* similarity with respect to another user
+* affinity to a genre/topic
+
+## **Getting Started <a name = "getting_started"></a>**
 This section covers the steps to have a hosting server, backend, and frontend up and running locally. See [deployment](#deployment) for notes on how to deploy the project on the cloud.
 
-### Setting Up The environment
+### **Setting Up The environment**
 Run the following to start the virtual env and install all the required packages
 ```
 virtualenv .env && source .env/bin/activate && pip install -r requirements.txt
 ```
 
-### Starting the local server
+### **Downloading personal youtube history**
+Navigate to [Google Takeout](https://takeout.google.com/settings/takeout):
 
-???
+* Create a new export
+* Deselect all
+* Search for "YouTube and YouTube Music" and select it
+* Click on "All youtube data included", deselect all and select "history"
+* Click on "Multiple Formats" and select json on History
+* Select your preferred method to receive the data and complete the export
 
 
-## Usage <a name="usage"></a>
+### **Starting the local server**
+After having started the virtual environment run 
+```
+python run.py
+```
+The web application should now be available at the address **http://127.0.0.1:8050/**
+
+
+## **Usage <a name="usage"></a>**
 
 Add notes about how to use the system.
 
-## Deployment <a name = "deployment"></a>
+## **Deployment <a name = "deployment"></a>**
 
 Add additional notes about how to deploy this on a live system.
 
-## Built Using <a name = "built_using"></a>
+## **Built Using <a name = "built_using"></a>**
 
 - [Pyhton](https://www.mongodb.com/) - Database
 
-## Authors <a name = "authors"></a>
+## **Authors <a name = "authors"></a>**
 
 - [Camilla Lambrocco](https://github.com/cala21)
 - [Rishabh Berlia](https://github.com/cala21)
@@ -70,6 +88,6 @@ Add additional notes about how to deploy this on a live system.
 - [David Scott](https://github.com/cala21)
 
 
-## Acknowledgements <a name = "acknowledgement"></a>
+## **Acknowledgements <a name = "acknowledgement"></a>**
 
 - References
