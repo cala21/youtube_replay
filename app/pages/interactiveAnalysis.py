@@ -2,7 +2,6 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 from apiFacade import YoutubeHelper
 from dash import dcc, html
-from pages import historyAnalysis
 from components import header
 
 data = (
@@ -22,18 +21,18 @@ layout = html.Div(
 
         html.Hr(),
 
-        dbc.Row(
-            children=[
-                dbc.Row(
-                    [ 
-                        dbc.Col(html.Div("One of three columns")),
-                        dbc.Col(html.Div("One of three columns")),
-                        dbc.Col(html.Div("One of three columns")),
-                    ]
-                ),
-                dbc.Col(dcc.Graph(id="my_graph",figure=historyAnalysis.fig1),width=9)
-            ]
-        )
+        # dbc.Row(
+        #     children=[
+        #         dbc.Row(
+        #             [ 
+        #                 dbc.Col(html.Div("One of three columns")),
+        #                 dbc.Col(html.Div("One of three columns")),
+        #                 dbc.Col(html.Div("One of three columns")),
+        #             ]
+        #         ),
+        #         dbc.Col(dcc.Graph(id="my_graph",figure=historyAnalysis.fig1),width=9)
+        #     ]
+        # )
     ]
 )
 

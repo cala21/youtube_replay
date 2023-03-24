@@ -25,6 +25,11 @@
     text-align: center;
 }
 
+.nav {
+    /* padding: 2rem 1rem; */
+    background-color: #f8f9fa;
+}
+
 .DateRangePickerInput_arrow_svg, .DateRangePickerInput_arrow_svg_1 {
     Height: 10px !important;
     Width: 10px !important;

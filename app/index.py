@@ -8,6 +8,7 @@ from replayApp import app
 from pages import historyAnalysis
 from pages import interactiveAnalysis
 from components import header
+from callbackProvider import get_callbacks
 
 page_container = html.Div(
     children=[
@@ -32,6 +33,7 @@ app.validation_layout = html.Div(
     ]
 )
 
+get_callbacks(app)
 @app.callback(
     Output(
         component_id='page-content',

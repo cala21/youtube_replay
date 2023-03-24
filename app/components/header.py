@@ -8,10 +8,11 @@ def header():
             dbc.Row(html.H1(children="Youtube Replay"), className="title"),
             dbc.Nav(
                 [
-                    dbc.NavLink("Home", href="/"),
-                    dbc.NavLink("History Analysis", href="/history-analysis"),
-                    dbc.NavLink("Interactive Analysis", href="/interactive-analysis")
-                ]
+                    dbc.NavLink("Home", href="/",active="exact"),
+                    dbc.NavLink("History Analysis", href="/history-analysis",active="exact"),
+                    dbc.NavLink("Interactive Analysis", href="/interactive-analysis",active="exact")
+                ],
+                pills=True
             )
         ]
 )

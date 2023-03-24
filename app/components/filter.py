@@ -12,14 +12,16 @@ def filter_by_date():
                 #Date range picker
                 html.Div(['Select a date range: ',
                     dcc.DatePickerRange(
-                        id='date-picker-sales',
-                        start_date=datetime(2021, 1, 1),
-                        end_date=datetime.today(),
+                        id='date-picker-history',
+                        min_date_allowed=datetime(2016, 10, 5),
+                        max_date_allowed=datetime(2023, 9, 19),
                         start_date_placeholder_text = 'Start date',
                         display_format='MMM-DD-YYYY',
                         first_day_of_week = 1,
                         end_date_placeholder_text = 'End date',
-                        style = {'font-size': '12px','display': 'inline-block', 'border-radius' : '2px', 'border' : '1px solid #ccc', 'color': '#333', 'border-spacing' : '0', 'border-collapse' :'separate'})
+                        style = {'font-size': '12px','display': 'inline-block', 'border-radius' : '2px', 'border' : '1px solid #ccc', 'color': '#333', 'border-spacing' : '0', 'border-collapse' :'separate'}
+                        ),
+                        html.Div(id='output-container-date-picker-history')
                 ], style = {'margin-top' : '5px'}
                 )
 
