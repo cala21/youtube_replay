@@ -1,14 +1,14 @@
 import base64
 from datetime import datetime
+from  dateutil import parser
 import io
 
-import dash
-from dash.dependencies import Input, Output, State
 from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 from components import header, uploader, filter
 import plotly.express as px
 import plotly.graph_objects as go
+from apiFacade import YoutubeHelper
 
 import pandas as pd
 
@@ -16,6 +16,7 @@ class Utils:
 
     def __init__(self):
         self.data = []
+        self.yth = YoutubeHelper("<API_KEY>")
 
     def parse_contents(self, contents, filename, date):
         content_type, content_string = contents.split(',')
@@ -56,7 +57,11 @@ class Utils:
                                 'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
                                 'whiteSpace': 'normal'
                             })),
-                    dbc.Col(dcc.Graph(id="my_graph",figure=self.load_graph()))
+                    # dbc.Col(
+                    #     dcc.Graph(
+                    #         id='crossfilter-indicator-scatter'
+                    #     )),
+                    dbc.Col(dcc.Graph(id="my_graph",figure=self.load_graph(self.data)))
                 ]
             ),
             html.Hr(),
@@ -68,18 +73,34 @@ class Utils:
             })
         ])
     
-    def load_graph(self):
-        ads = self.data.count()["details"]
-        total = self.data.count()["title"] - ads
+    def load_scatter(self, data):
+        self.yth
+
+        # fig = px.scatter(x=dff[dff['Indicator Name'] == xaxis_column_name]['Value'],
+        #         y=dff[dff['Indicator Name'] == yaxis_column_name]['Value'],
+        #         hover_name=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name']
+        #         )
+
+        # fig.update_traces(customdata=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'])
+
+        # fig.update_xaxes(title=xaxis_column_name, type='linear' if xaxis_type == 'Linear' else 'log')
+
+        # fig.update_yaxes(title=yaxis_column_name, type='linear' if yaxis_type == 'Linear' else 'log')
+
+        # fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+        return 
+
+    def load_graph(self, data):
+        ads = data.count()["details"]
+        total = data.count()["title"] - ads
 
         trace1 = go.Bar(    #setup the chart for Resolved records
             x=["Ads", "Videos"], #x for Resolved records
             y=[ads,total],#y for Resolved records
             marker_color=px.colors.qualitative.Dark24[0],  #color
-            textposition="outside", #text position
-            name="Resolved", #legend name
+            textposition="outside" #text position
         )
-        layout = go.Layout(barmode="group", title="Resolved vs Unresolved") #define how to display the columns
+        layout = go.Layout(barmode="group", title="Ads vs Watched Videos") #define how to display the columns
         fig1 = go.Figure(data=trace1, layout=layout)
         fig1.update_layout(
             title=dict(x=0.5), #center the title
@@ -91,9 +112,20 @@ class Utils:
 
         return fig1
     
+    def parse_date(self, start_date, end_date):
+        start_date_string = None
+        end_date_string = None
+        if start_date is not None:
+            start_date_object = parser.isoparse(start_date)
+            start_date_string = start_date_object.strftime('%B %d, %Y')
+        if end_date is not None:
+            end_date_object = parser.isoparse(end_date)
+            end_date_string = end_date_object.strftime('%B %d, %Y')
+        return (start_date_string, end_date_string)
+
     def filter_by_date_range(self, start, stop):
         if start is not None and stop is not None:
-            return (self.data_f[(pd.to_datetime(self.data_f["date"], format="%B %d, %Y") > datetime.strptime(start, "%B %d, %Y")) \
-                   & (datetime.strptime(stop, "%B %d, %Y") > pd.to_datetime(self.data_f["date"], format="%B %d, %Y"))]).to_dict('records')
+            return (self.data[(pd.to_datetime(self.data["date"], format="%B %d, %Y") > datetime.strptime(start, "%B %d, %Y")) \
+                   & (datetime.strptime(stop, "%B %d, %Y") > pd.to_datetime(self.data["date"], format="%B %d, %Y"))])
         
-        return self.data_f.to_dict('records')
+        return self.data

@@ -1,6 +1,5 @@
 
 from dash.dependencies import Input, Output, State
-from  dateutil import parser
 from utils import Utils
 
 def get_callbacks(app):
@@ -22,14 +21,27 @@ def get_callbacks(app):
     Input('date-picker-history', 'start_date'),
     Input('date-picker-history', 'end_date'))
     def update_output(start_date, end_date):
-        start_date_string = None
-        end_date_string = None
-        if start_date is not None:
-            start_date_object = parser.isoparse(start_date)
-            start_date_string = start_date_object.strftime('%B %d, %Y')
-        if end_date is not None:
-            end_date_object = parser.isoparse(end_date)
-            end_date_string = end_date_object.strftime('%B %d, %Y')
+        start_date_string, end_date_string =  utils.parse_date(start_date, end_date)
 
-        return utils.filter_by_date_range(start_date_string, end_date_string)
+        return utils.filter_by_date_range(start_date_string, end_date_string)[["date","title"]].to_dict('records')
+    
+    @app.callback(
+    Output('my_graph', 'figure'),
+    Input('date-picker-history', 'start_date'),
+    Input('date-picker-history', 'end_date'))
+    def update_graph(start_date, end_date):
+        start_date_string, end_date_string =  utils.parse_date(start_date, end_date)
+        data = utils.filter_by_date_range(start_date_string, end_date_string)
+
+        return utils.load_graph(data)
+    
+    @app.callback(
+    Output('crossfilter-indicator-scatter', 'figure'),
+    Input('date-picker-history', 'start_date'),
+    Input('date-picker-history', 'end_date'))
+    def update_scatter(start_date, end_date):
+        start_date_string, end_date_string =  utils.parse_date(start_date, end_date)
+        data = utils.filter_by_date_range(start_date_string, end_date_string)
+
+        return utils.load_scatter(data)
             
