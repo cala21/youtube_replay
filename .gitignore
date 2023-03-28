@@ -5,3 +5,5 @@ watch-history.json
 .DS_Store
 Takeout/*
 *.pyc
+app/sample_category.json
+app/sample.json

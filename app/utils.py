@@ -18,6 +18,44 @@ class Utils:
         self.data = []
         self.yth = YoutubeHelper("<API_KEY>")
 
+    #region Youtube API data cleaning
+    
+    def clean_video_details(self):
+        # Extract ids from watched history urls
+        watched_videos = self.data[self.data["details"].notnull() == False]
+        watched_videos = watched_videos[watched_videos["titleUrl"].notna()]
+        ids = []
+
+        for index,video in watched_videos.iterrows():
+            ids.append(video["titleUrl"].replace("?v=","/").split("watch/")[1])
+            watched_videos.loc[index, "id"] = video["titleUrl"].replace("?v=","/").split("watch/")[1]
+
+        # Limit request to 50 elements 
+        # TODO: add logic to go over entire history
+        ids_s = ",".join(ids[:49])
+        video_data_details = self.yth.get_video_details(ids_s)
+        
+        data_norm = pd.json_normalize(video_data_details["items"])
+        data_norm = data_norm.rename(columns={"snippet.title": "title",
+                        "snippet.description": "description",
+                        "contentDetails.duration": "duration",
+                        "snippet.categoryId": "categoryId",
+                        "statistics.viewCount": "viewCount",
+                        "statistics.likeCount": "likeCount",
+                        "statistics.commentCount": "commentCount"})
+        data_norm = data_norm.merge(watched_videos[["id","date"]], how="left", on="id")
+
+        return data_norm[["id","date","title","description","duration","categoryId","viewCount","likeCount","commentCount"]]
+    
+    def clean_categories(self, location="US"):
+        category_details = self.yth.get_video_category(location)
+        data_norm = pd.json_normalize(category_details["items"])
+        data_norm = data_norm.rename(columns={"snippet.title": "categoryTitle"})
+        
+        return data_norm[["id","title"]]
+    #endregion
+
+    #region Parsers
     def parse_contents(self, contents, filename, date):
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
@@ -31,6 +69,7 @@ class Utils:
                 )
                 self.data.set_index('date')
                 self.data['date']= self.data['date'].dt.strftime('%B %d, %Y')
+                self.clean_video_details()
                 self.data_f = self.data[["date","title"]]
             else:
                 return html.Div([
@@ -73,6 +112,26 @@ class Utils:
             })
         ])
     
+    def parse_date(self, start_date, end_date):
+        start_date_string = None
+        end_date_string = None
+        if start_date is not None:
+            start_date_object = parser.isoparse(start_date)
+            start_date_string = start_date_object.strftime('%B %d, %Y')
+        if end_date is not None:
+            end_date_object = parser.isoparse(end_date)
+            end_date_string = end_date_object.strftime('%B %d, %Y')
+        return (start_date_string, end_date_string)
+
+    def filter_by_date_range(self, start, stop):
+        if start is not None and stop is not None:
+            return (self.data[(pd.to_datetime(self.data["date"], format="%B %d, %Y") > datetime.strptime(start, "%B %d, %Y")) \
+                   & (datetime.strptime(stop, "%B %d, %Y") > pd.to_datetime(self.data["date"], format="%B %d, %Y"))])
+        
+        return self.data
+    #endregion
+
+    #region DOM components
     def load_scatter(self, data):
         self.yth
 
@@ -111,21 +170,4 @@ class Utils:
         )
 
         return fig1
-    
-    def parse_date(self, start_date, end_date):
-        start_date_string = None
-        end_date_string = None
-        if start_date is not None:
-            start_date_object = parser.isoparse(start_date)
-            start_date_string = start_date_object.strftime('%B %d, %Y')
-        if end_date is not None:
-            end_date_object = parser.isoparse(end_date)
-            end_date_string = end_date_object.strftime('%B %d, %Y')
-        return (start_date_string, end_date_string)
-
-    def filter_by_date_range(self, start, stop):
-        if start is not None and stop is not None:
-            return (self.data[(pd.to_datetime(self.data["date"], format="%B %d, %Y") > datetime.strptime(start, "%B %d, %Y")) \
-                   & (datetime.strptime(stop, "%B %d, %Y") > pd.to_datetime(self.data["date"], format="%B %d, %Y"))])
-        
-        return self.data
+    #endregion
