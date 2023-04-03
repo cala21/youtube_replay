@@ -1,5 +1,5 @@
 from dash import html
-import dash_core_components as dcc
+from dash import dcc
 
 def uploader():
     return html.Div([

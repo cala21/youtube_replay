@@ -1,5 +1,5 @@
 from dash import html
-import dash_core_components as dcc
+from dash import dcc
 from datetime import datetime
 
 def filter_by_date():
