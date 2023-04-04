@@ -16,7 +16,7 @@ class Utils:
 
     def __init__(self):
         self.data = []
-        self.yth = YoutubeHelper("AIzaSyD2_iaLY7vnGIKR9bMiVcKzhw0CrR0Ufpw")
+        self.yth = YoutubeHelper("<API_KEY>")
 
     #region Youtube API data cleaning
     
