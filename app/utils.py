@@ -169,8 +169,8 @@ class Utils:
         date_span = []
         fig = go.Figure()
         genre = defaultdict(list)
-        grouped_data = self.data_cleaned.groupby([pd.Grouper(key = 'date', freq='M')])
-        categories = set(self.data_cleaned['categoryName'])
+        grouped_data = data.groupby([pd.Grouper(key = 'date', freq='M')])
+        categories = set(data['categoryName'])
 
         for r in grouped_data:
             if r[1].empty:
