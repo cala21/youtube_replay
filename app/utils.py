@@ -16,7 +16,7 @@ class Utils:
 
     def __init__(self):
         self.data = []
-        self.yth = YoutubeHelper("<API_KEY>")
+        self.yth = YoutubeHelper("AIzaSyD2_iaLY7vnGIKR9bMiVcKzhw0CrR0Ufpw")
 
     #region Youtube API data cleaning
     
@@ -25,6 +25,7 @@ class Utils:
         watched_videos = self.data[self.data["details"].notnull() == False]
         watched_videos = watched_videos[watched_videos["titleUrl"].notna()]
         ids = []
+        categories = self.clean_categories()
 
         for index,video in watched_videos.iterrows():
             ids.append(video["titleUrl"].replace("?v=","/").split("watch/")[1])
@@ -44,15 +45,16 @@ class Utils:
                         "statistics.likeCount": "likeCount",
                         "statistics.commentCount": "commentCount"})
         data_norm = data_norm.merge(watched_videos[["id","date"]], how="left", on="id")
+        data_norm['categoryName'] = data_norm.apply(lambda x: categories[x['categoryId']]["categoryName"], axis=1)
 
-        return data_norm[["id","date","title","description","duration","categoryId","viewCount","likeCount","commentCount"]]
+        return data_norm[["id","date","categoryName","title","description","duration","categoryId","viewCount","likeCount","commentCount"]]
     
     def clean_categories(self, location="US"):
         category_details = self.yth.get_video_category(location)
         data_norm = pd.json_normalize(category_details["items"])
-        data_norm = data_norm.rename(columns={"snippet.title": "categoryTitle"})
-        
-        return data_norm[["id","title"]]
+        data_norm = data_norm.rename(columns={"snippet.title": "categoryName"})
+
+        return data_norm[["id","categoryName"]].set_index("id").to_dict('index')
     #endregion
 
     #region Parsers
@@ -69,7 +71,8 @@ class Utils:
                 )
                 self.data.set_index('date')
                 self.data['date']= self.data['date'].dt.strftime('%B %d, %Y')
-                self.clean_video_details()
+                self.data_cleaned = self.clean_video_details()
+                # print(self.clean_video_details())
                 self.data_f = self.data[["date","title"]]
             else:
                 return html.Div([
@@ -85,21 +88,22 @@ class Utils:
             filter.filter_by_date(),
             dbc.Row(
                 children=[
-                    dbc.Col(
-                        dash_table.DataTable(
-                            data=self.data_f.to_dict('records'),
-                            columns=[{"name": i, "id": i} for i in self.data_f.columns],
-                            id='history-table',
-                            style_table={'overflowX': 'auto'},
-                            style_cell={
-                                'height': 'auto',
-                                'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
-                                'whiteSpace': 'normal'
-                            })),
                     # dbc.Col(
-                    #     dcc.Graph(
-                    #         id='crossfilter-indicator-scatter'
-                    #     )),
+                        # dash_table.DataTable(
+                        #     data=self.data_f.to_dict('records'),
+                        #     columns=[{"name": i, "id": i} for i in self.data_f.columns],
+                        #     id='history-table',
+                        #     style_table={'overflowX': 'auto'},
+                        #     style_cell={
+                        #         'height': 'auto',
+                        #         'minWidth': '180px', 'width': '180px', 'maxWidth': '180px',
+                        #         'whiteSpace': 'normal'
+                        #     })),
+                    dbc.Col(
+                        dcc.Graph(
+                            id='crossfilter-indicator-scatter',
+                            figure=self.load_scatter(self.data_cleaned)
+                        )),
                     dbc.Col(dcc.Graph(id="my_graph",figure=self.load_graph(self.data)))
                 ]
             ),
@@ -133,21 +137,20 @@ class Utils:
 
     #region DOM components
     def load_scatter(self, data):
-        self.yth
-
-        # fig = px.scatter(x=dff[dff['Indicator Name'] == xaxis_column_name]['Value'],
-        #         y=dff[dff['Indicator Name'] == yaxis_column_name]['Value'],
-        #         hover_name=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name']
-        #         )
+        # print(data['viewCount'])
+        fig = px.scatter(x=data['date'],
+                y=data['viewCount'],
+                hover_name=data['title']
+                )
 
         # fig.update_traces(customdata=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'])
 
-        # fig.update_xaxes(title=xaxis_column_name, type='linear' if xaxis_type == 'Linear' else 'log')
+        # fig.update_xaxes(title="Date", type='linear')
 
-        # fig.update_yaxes(title=yaxis_column_name, type='linear' if yaxis_type == 'Linear' else 'log')
+        fig.update_yaxes(title="Views", type='linear')
 
-        # fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
-        return 
+        fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+        return fig
 
     def load_graph(self, data):
         ads = data.count()["details"]
