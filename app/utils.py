@@ -9,6 +9,8 @@ from components import header, uploader, filter
 import plotly.express as px
 import plotly.graph_objects as go
 from apiFacade import YoutubeHelper
+from collections import defaultdict
+import numpy as np
 
 import pandas as pd
 
@@ -107,8 +109,17 @@ class Utils:
                         )),
                     dbc.Col(
                         dcc.Graph(
-                            id="my_graph",
+                            id="ads-graph",
                             figure=self.load_graph(self.data)
+                        ))
+                ]
+            ),
+            dbc.Row(
+                children=[
+                    dbc.Col(
+                        dcc.Graph(
+                            id='genre-graph',
+                            figure=self.load_genre_graph(self.data_cleaned)
                         ))
                 ]
             ),
@@ -152,6 +163,40 @@ class Utils:
         fig.update_yaxes(title="Global Views", type='log')
         fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
 
+        return fig
+    
+    def load_genre_graph(self, data):
+        date_span = []
+        fig = go.Figure()
+        genre = defaultdict(list)
+        grouped_data = self.data_cleaned.groupby([pd.Grouper(key = 'date', freq='M')])
+        categories = set(self.data_cleaned['categoryName'])
+
+        for r in grouped_data:
+            if r[1].empty:
+                continue
+
+            date_span.append(r[0])
+            category_span = set(r[1]['categoryName'])
+            missing_groups = list(categories-category_span)
+            tmpdf = r[1].groupby(['categoryName']).size().reset_index(name ='count')
+
+            for c in missing_groups:
+                tmpdf=tmpdf.append({"categoryName":c,"count":0},ignore_index=True)
+            
+            for i,r in tmpdf.iterrows():
+                genre[r["categoryName"]].append(r["count"])
+
+        for k,v in genre.items():
+            # fig.add_trace(go.Scatter(x=date_span, y=v, fill='tozeroy',
+            #                 mode='none',
+            #                 name=k
+            #                 ))
+
+            fig.add_trace(go.Bar(x=date_span, y=v, name=k))
+        fig.update_layout(barmode='group')
+        fig.update_xaxes(title="Date")
+        fig.update_yaxes(title="Personal Views")
         return fig
 
     def load_graph(self, data):

@@ -27,7 +27,7 @@ def get_callbacks(app):
         return utils.filter_by_date_range(start_date_string, end_date_string)[["date","title"]].to_dict('records')
     
     @app.callback(
-    Output('my_graph', 'figure'),
+    Output('ads-graph', 'figure'),
     Input('date-picker', 'start_date'),
     Input('date-picker', 'end_date'))
     def update_graph(start_date, end_date):
@@ -43,4 +43,13 @@ def get_callbacks(app):
         data = utils.filter_by_date_range(start_date, end_date)
 
         return utils.load_scatter(data)
+    
+    @app.callback(
+    Output('genre-graph', 'figure'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
+    def update_genre_graph(start_date, end_date):
+        data = utils.filter_by_date_range(start_date, end_date)
+
+        return utils.load_genre_graph(data)
             
