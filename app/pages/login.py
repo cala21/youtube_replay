@@ -1,7 +1,7 @@
 import pandas as pd
 import dash_bootstrap_components as dbc
 from dash import html
-from components import header, login_button
+from components import header, authorization
 
 layout = html.Div(
     children=[
@@ -13,7 +13,10 @@ layout = html.Div(
         ),
 
         html.Hr(),
-        login_button.login_button()
+        authorization.login_button(),
+        html.Hr(),
+        authorization.login_table(),
+        authorization.logout_button()
     ]
 )
 
