@@ -18,12 +18,12 @@ class Utils:
         self.data = []
         self.yth = YoutubeHelper("<API_KEY>")
 
-    #region Youtube API data cleaning
-    
+    #region Youtube API data cleaning  
     def clean_video_details(self):
         # Extract ids from watched history urls
         watched_videos = self.data[self.data["details"].notnull() == False]
         watched_videos = watched_videos[watched_videos["titleUrl"].notna()]
+
         ids = []
         categories = self.clean_categories()
 
@@ -46,6 +46,7 @@ class Utils:
                         "statistics.commentCount": "commentCount"})
         data_norm = data_norm.merge(watched_videos[["id","date"]], how="left", on="id")
         data_norm['categoryName'] = data_norm.apply(lambda x: categories[x['categoryId']]["categoryName"], axis=1)
+        data_norm.sort_index(inplace=True)
 
         return data_norm[["id","date","categoryName","title","description","duration","categoryId","viewCount","likeCount","commentCount"]]
     
@@ -70,10 +71,10 @@ class Utils:
                     .sort_values(by="date")
                 )
                 self.data.set_index('date')
-                self.data['date']= self.data['date'].dt.strftime('%B %d, %Y')
+                #self.data['date']= self.data['date'].dt.strftime('%B %d, %Y')
                 self.data_cleaned = self.clean_video_details()
                 # print(self.clean_video_details())
-                self.data_f = self.data[["date","title"]]
+                self.data_with_ads = self.data[["date","title"]]
             else:
                 return html.Div([
                     'The file should be in json format'
@@ -83,9 +84,9 @@ class Utils:
             return html.Div([
                 'There was an error processing this file.'
             ])
-
+        
         return html.Div([
-            filter.filter_by_date(),
+            filter.filter_by_date(self.data['date'].min(), self.data['date'].max()),
             dbc.Row(
                 children=[
                     # dbc.Col(
@@ -101,19 +102,17 @@ class Utils:
                         #     })),
                     dbc.Col(
                         dcc.Graph(
-                            id='crossfilter-indicator-scatter',
+                            id='views-scatter',
                             figure=self.load_scatter(self.data_cleaned)
                         )),
-                    dbc.Col(dcc.Graph(id="my_graph",figure=self.load_graph(self.data)))
+                    dbc.Col(
+                        dcc.Graph(
+                            id="my_graph",
+                            figure=self.load_graph(self.data)
+                        ))
                 ]
             ),
-            html.Hr(),
-            # TODO: remove, just for debugging
-            html.Div('Raw Content'),
-            html.Pre(contents[0:200] + '...', style={
-                'whiteSpace': 'pre-wrap',
-                'wordBreak': 'break-all'
-            })
+            html.Hr()
         ])
     
     def parse_date(self, start_date, end_date):
@@ -127,29 +126,32 @@ class Utils:
             end_date_string = end_date_object.strftime('%B %d, %Y')
         return (start_date_string, end_date_string)
 
-    def filter_by_date_range(self, start, stop):
+    def filter_by_date_range_ads(self, start, stop):
         if start is not None and stop is not None:
-            return (self.data[(pd.to_datetime(self.data["date"], format="%B %d, %Y") > datetime.strptime(start, "%B %d, %Y")) \
-                   & (datetime.strptime(stop, "%B %d, %Y") > pd.to_datetime(self.data["date"], format="%B %d, %Y"))])
+            return (self.data[(self.data["date"] > start) \
+                   & (stop > self.data["date"])])
         
         return self.data
+    
+    def filter_by_date_range(self, start, stop):
+        if start is not None and stop is not None:
+            return (self.data_cleaned[(self.data_cleaned["date"] > start) \
+                   & (stop > self.data_cleaned["date"])])
+        
+        return self.data_cleaned
     #endregion
 
     #region DOM components
     def load_scatter(self, data):
-        # print(data['viewCount'])
         fig = px.scatter(x=data['date'],
                 y=data['viewCount'],
                 hover_name=data['title']
                 )
 
-        # fig.update_traces(customdata=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'])
-
-        # fig.update_xaxes(title="Date", type='linear')
-
-        fig.update_yaxes(title="Views", type='linear')
-
+        fig.update_xaxes(title="Date")
+        fig.update_yaxes(title="Global Views", type='log')
         fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+
         return fig
 
     def load_graph(self, data):
