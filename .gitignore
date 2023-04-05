@@ -5,5 +5,7 @@ watch-history.json
 .DS_Store
 Takeout/*
 *.pyc
+.gcloudignore
+.zshrc
 app/sample_category.json
 app/sample.json

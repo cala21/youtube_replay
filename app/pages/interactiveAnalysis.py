@@ -4,11 +4,14 @@ from apiFacade import YoutubeHelper
 from dash import dcc, html
 from components import header
 
-data = (
-    pd.read_json('watch-history.json')
+try:
+    data = (
+    pd.read_json('data/watch-history.json')
     .assign(Date=lambda data: pd.to_datetime(data["time"], format="%Y-%m-%d"))
     .sort_values(by="Date")
-)
+    )
+except:
+     print("An exception occurred")
 
 layout = html.Div(
     children=[
@@ -19,7 +22,7 @@ layout = html.Div(
             ),
         ),
 
-        html.Hr(),
+        html.Hr()
 
         # dbc.Row(
         #     children=[

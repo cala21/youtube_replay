@@ -1,12 +1,13 @@
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc 
+from dash import html
 from dash.dependencies import Input, Output
 
 from replayApp import app
 from pages import historyAnalysis
 from pages import interactiveAnalysis
+from pages import login
 from components import header
 from callbackProvider import get_callbacks
 
@@ -30,6 +31,7 @@ app.validation_layout = html.Div(
         index_layout,
         historyAnalysis.layout,
         interactiveAnalysis.layout,
+        login.layout,
     ]
 )
 
@@ -52,5 +54,7 @@ def display_page(pathname):
         return historyAnalysis.layout
     elif pathname == '/interactive-analysis':
         return interactiveAnalysis.layout
+    elif pathname == '/login':
+        return login.layout
     else:
         return '404'
