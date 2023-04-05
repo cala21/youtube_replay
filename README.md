@@ -71,6 +71,64 @@ Add notes about how to use the system.
 
 Add additional notes about how to deploy this on a live system.
 
+The following steps are to deploy this Dash application to GCP. If your app doesn't work locally, you should fix that first as it won't work on GCP (even if you pray real hard). If it works locally, but it doesn't deploy, the majority of the time it will be due to the `app.yaml` file.
+
+##### Step 1: Make a Project on GCP
+> Skip this step if the project is already created by a team member.
+
+Using the CLI or the Console Interface online (which we use below), create a new project with a suitable project name (here we call it `youtubereplay-project`).
+
+##### Step 2: Make Yourself the Owner of Project
+
+> Skip this step if the project is already created by a team member. Ask them to add you as a contributor to be able to deploy.
+
+Make sure the project you've just created is selected on the console, then click 'ADD PEOPLE TO THIS PROJECT'.
+Then input your user name and set the role to `Project` > `Owner`.
+That's it for now on the Google Cloud Platform Console.
+
+Add other contributors to the project as needed.
+
+##### Step 3: Deploy Using gcloud Command Line Tool
+
+If you haven't installed the [gcloud command line tool](https://cloud.google.com/sdk/gcloud/) do so now.
+
+Next, check your project is active in gcloud using:
+
+`gcloud config get-value project`
+
+Which will print the following on screen:
+
+```
+Your active configuration is: [default]
+
+your-project-id
+```
+
+To change the project to your desired project, type:
+
+`gcloud config set project your-project-id`
+
+Next, to deploy, type:
+
+`gcloud app deploy`
+
+Then select your desired region (we use `us-west2`)
+
+If you have setup your configuration correctly then it will deploy the Dash app (after a while), which will be available at:
+
+`https://your-project-id.x.x.appspot.com/`
+
+Next, to browse your hosted app, type:
+
+`gcloud app browse`
+
+The youtube-replay app above is hosted [here](https://youtubereplay-project.wl.r.appspot.com).
+
+
+##### Step 4: Restrict Access to your Application (optional)
+
+By default your application will be accessible to anyone in the world. To restrict the access you can use [Firewall Rules](https://cloud.google.com/blog/products/gcp/introducing-app-engine-firewall-an-easy-way-to-control-access-to-your-app).
+
 ## **Built Using <a name = "built_using"></a>**
 
 - [Pyhton](https://www.mongodb.com/) - Database
@@ -78,12 +136,11 @@ Add additional notes about how to deploy this on a live system.
 ## **Authors <a name = "authors"></a>**
 
 - [Camilla Lambrocco](https://github.com/cala21)
-- [Rishabh Berlia](https://github.com/cala21)
-- [Christopher Hodge](https://github.com/cala21)
-- [Joshua Jalowiec](https://github.com/cala21)
-- [David Scott](https://github.com/cala21)
+- [Rishabh Berlia](https://github.com/berliarishabh)
+- [Christopher Hodge](https://github.com/)
+- [Joshua Jalowiec](https://github.com/)
+- [David Scott](https://github.com/)
 
 
 ## **Acknowledgements <a name = "acknowledgement"></a>**
-
 - References
