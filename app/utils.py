@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 from apiFacade import YoutubeHelper
 from collections import defaultdict
 import numpy as np
+import warnings; warnings.filterwarnings("ignore")
 
 import pandas as pd
 
@@ -66,16 +67,13 @@ class Utils:
         decoded = base64.b64decode(content_string)
         try:
             if 'json' in filename:
-                # Assume that the user uploaded an excel file
                 self.data  = (
                     pd.read_json(io.BytesIO(decoded), convert_dates=["time"])
                     .assign(date=lambda data: pd.to_datetime(data["time"], format="%B %d, %Y"))
                     .sort_values(by="date")
                 )
                 self.data.set_index('date')
-                #self.data['date']= self.data['date'].dt.strftime('%B %d, %Y')
                 self.data_cleaned = self.clean_video_details()
-                # print(self.clean_video_details())
                 self.data_with_ads = self.data[["date","title"]]
             else:
                 return html.Div([
@@ -120,6 +118,11 @@ class Utils:
                         dcc.Graph(
                             id='genre-graph',
                             figure=self.load_genre_graph(self.data_cleaned)
+                        )),
+                    dbc.Col(
+                        dcc.Graph(
+                            id='time-graph',
+                            figure=self.load_time_trend_graph(self.data_cleaned)
                         ))
                 ]
             ),
@@ -136,6 +139,13 @@ class Utils:
             end_date_object = parser.isoparse(end_date)
             end_date_string = end_date_object.strftime('%B %d, %Y')
         return (start_date_string, end_date_string)
+
+    def aggregate_by_time(self, data):
+        data['hour'] = data.date.dt.hour
+        data_grouped = data.groupby(data['hour']).size().reset_index(name ='count')
+        data_grouped["h_percentage"] = data_grouped["count"]/len(data['hour']) *100
+        data_grouped.index = data_grouped['hour']
+        return data_grouped.reindex(np.arange(0, 24 + 1), fill_value=0)
 
     def filter_by_date_range_ads(self, start, stop):
         if start is not None and stop is not None:
@@ -163,6 +173,31 @@ class Utils:
         fig.update_yaxes(title="Global Views", type='log')
         fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
 
+        fig.update_layout(
+            title=dict(x=0.5, text="Popularity of Watched Videos"), 
+            xaxis_title="Date",
+            yaxis_title="Views",
+            margin=dict(l=20, r=20, t=60, b=20),
+            paper_bgcolor="aliceblue"
+        )
+        return fig
+    
+    def load_time_trend_graph(self, data):
+        
+        fig = go.Figure()
+        hour_data = self.aggregate_by_time(data)
+        
+        fig.add_trace(go.Scatter(y=hour_data['h_percentage'], x=hour_data.index, fill='tozeroy',
+                            mode='none'
+                            ))
+    
+        fig.update_layout(
+            title=dict(x=0.5, text="Watched Video Hourly Trend"), 
+            xaxis_title="Hour",
+            yaxis_title="%",
+            margin=dict(l=20, r=20, t=60, b=20),
+            paper_bgcolor="aliceblue"
+        )
         return fig
     
     def load_genre_graph(self, data):
@@ -182,7 +217,8 @@ class Utils:
             tmpdf = r[1].groupby(['categoryName']).size().reset_index(name ='count')
 
             for c in missing_groups:
-                tmpdf=tmpdf.append({"categoryName":c,"count":0},ignore_index=True)
+                tmpdf = pd.concat([tmpdf, pd.DataFrame.from_records([{"categoryName":c,"count":0}])])
+                # tmpdf=tmpdf.append({"categoryName":c,"count":0},ignore_index=True)
             
             for i,r in tmpdf.iterrows():
                 genre[r["categoryName"]].append(r["count"])
@@ -194,9 +230,15 @@ class Utils:
             #                 ))
 
             fig.add_trace(go.Bar(x=date_span, y=v, name=k))
-        fig.update_layout(barmode='group')
-        fig.update_xaxes(title="Date")
-        fig.update_yaxes(title="Personal Views")
+
+        fig.update_layout(
+            barmode='group',
+            title=dict(x=0.5, text="Genre Over Time"), 
+            xaxis_title="Date",
+            yaxis_title="Personal Views",
+            margin=dict(l=20, r=20, t=60, b=20),
+            paper_bgcolor="aliceblue"
+        )
         return fig
 
     def load_graph(self, data):

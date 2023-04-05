@@ -52,4 +52,13 @@ def get_callbacks(app):
         data = utils.filter_by_date_range(start_date, end_date)
 
         return utils.load_genre_graph(data)
+    
+    @app.callback(
+    Output('time-graph', 'figure'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
+    def update_genre_graph(start_date, end_date):
+        data = utils.filter_by_date_range(start_date, end_date)
+
+        return utils.load_time_trend_graph(data)
             
