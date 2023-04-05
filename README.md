@@ -71,20 +71,24 @@ Add notes about how to use the system.
 
 Add additional notes about how to deploy this on a live system.
 
-The following steps are to deploy a Dash application to GCP. If your app doesn't work locally, you should fix that first as it won't work on GCP (even if you pray real hard). If it works locally, but it doesn't deploy, the majority of the time it will be due to the `app.yaml` file.
+The following steps are to deploy this Dash application to GCP. If your app doesn't work locally, you should fix that first as it won't work on GCP (even if you pray real hard). If it works locally, but it doesn't deploy, the majority of the time it will be due to the `app.yaml` file.
 
-### Step 1: Make a Project on GCP
+##### Step 1: Make a Project on GCP
+> Skip this step if the project is already created by a team member.
 
 Using the CLI or the Console Interface online (which we use below), create a new project with a suitable project name (here we call it `youtubereplay-project`).
 
+##### Step 2: Make Yourself the Owner of Project
 
-### Step 2: Make Yourself the Owner of Project
+> Skip this step if the project is already created by a team member. Ask them to add you as a contributor to be able to deploy.
 
 Make sure the project you've just created is selected on the console, then click 'ADD PEOPLE TO THIS PROJECT'.
 Then input your user name and set the role to `Project` > `Owner`.
 That's it for now on the Google Cloud Platform Console.
 
-### Step 3: Deploy Using gcloud Command Line Tool
+Add other contributors to the project as needed.
+
+##### Step 3: Deploy Using gcloud Command Line Tool
 
 If you haven't installed the [gcloud command line tool](https://cloud.google.com/sdk/gcloud/) do so now.
 
@@ -118,10 +122,10 @@ Next, to browse your hosted app, type:
 
 `gcloud app browse`
 
-The youtube-replay app above is hosted [here](https://youtubereplay-project.wl.r.appspot.com/).
+The youtube-replay app above is hosted [here](https://youtubereplay-project.wl.r.appspot.com).
 
 
-### Step 4: Restrict Access to your Application (optional)
+##### Step 4: Restrict Access to your Application (optional)
 
 By default your application will be accessible to anyone in the world. To restrict the access you can use [Firewall Rules](https://cloud.google.com/blog/products/gcp/introducing-app-engine-firewall-an-easy-way-to-control-access-to-your-app).
 
@@ -139,5 +143,4 @@ By default your application will be accessible to anyone in the world. To restri
 
 
 ## **Acknowledgements <a name = "acknowledgement"></a>**
-
 - References
