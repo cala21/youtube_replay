@@ -1,5 +1,6 @@
 from dash import html
 from dash import dcc
+import dash_bootstrap_components as dbc
 
 def uploader():
     return html.Div([
@@ -22,5 +23,7 @@ def uploader():
             # Allow multiple files to be uploaded
             multiple=True
         ),
-        html.Div(id='output-data-upload'),
+        dbc.Spinner(children=[
+            html.Div(id='output-data-upload')
+        ],fullscreen=True)
     ])

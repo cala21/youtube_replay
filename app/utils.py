@@ -34,19 +34,23 @@ class Utils:
             ids.append(video["titleUrl"].replace("?v=","/").split("watch/")[1])
             watched_videos.loc[index, "id"] = video["titleUrl"].replace("?v=","/").split("watch/")[1]
 
-        # Limit request to 50 elements 
-        # TODO: add logic to go over entire history
-        ids_s = ",".join(ids[:49])
+        data_norm = pd.DataFrame()
+        for i in range(0,len(ids)-50,50):
+        # for i in range(0,100,50):
+            ids_s = ",".join(ids[i+1:i+50])
+            video_data_details = self.yth.get_video_details(ids_s)
+            data_norm = pd.concat([data_norm, pd.json_normalize(video_data_details["items"])])
+
+        ids_s = ",".join(ids[i+1:i+np.mod(len(ids),50)])
         video_data_details = self.yth.get_video_details(ids_s)
-        
-        data_norm = pd.json_normalize(video_data_details["items"])
+        data_norm = pd.concat([data_norm, pd.json_normalize(video_data_details["items"])])
         data_norm = data_norm.rename(columns={"snippet.title": "title",
-                        "snippet.description": "description",
-                        "contentDetails.duration": "duration",
-                        "snippet.categoryId": "categoryId",
-                        "statistics.viewCount": "viewCount",
-                        "statistics.likeCount": "likeCount",
-                        "statistics.commentCount": "commentCount"})
+            "snippet.description": "description",
+            "contentDetails.duration": "duration",
+            "snippet.categoryId": "categoryId",
+            "statistics.viewCount": "viewCount",
+            "statistics.likeCount": "likeCount",
+            "statistics.commentCount": "commentCount"})
         data_norm = data_norm.merge(watched_videos[["id","date"]], how="left", on="id")
         data_norm['categoryName'] = data_norm.apply(lambda x: categories[x['categoryId']]["categoryName"], axis=1)
         data_norm.sort_index(inplace=True)
@@ -86,9 +90,9 @@ class Utils:
             ])
         
         return html.Div([
-            filter.filter_by_date(self.data['date'].min(), self.data['date'].max()),
-            dbc.Row(
-                children=[
+                filter.filter_by_date(self.data['date'].min(), self.data['date'].max()),
+                dbc.Row(
+                    children=[
                     # dbc.Col(
                         # dash_table.DataTable(
                         #     data=self.data_f.to_dict('records'),
@@ -103,12 +107,12 @@ class Utils:
                     dbc.Col(
                         dcc.Graph(
                             id='views-scatter',
-                            figure=self.load_scatter(self.data_cleaned)
+                            # figure=self.load_scatter(self.data_cleaned)
                         )),
                     dbc.Col(
                         dcc.Graph(
                             id="ads-graph",
-                            figure=self.load_graph(self.data)
+                            # figure=self.load_graph(self.data)
                         ))
                 ]
             ),
@@ -117,12 +121,12 @@ class Utils:
                     dbc.Col(
                         dcc.Graph(
                             id='genre-graph',
-                            figure=self.load_genre_graph(self.data_cleaned)
+                            # figure=self.load_genre_graph(self.data_cleaned)
                         )),
                     dbc.Col(
                         dcc.Graph(
                             id='time-graph',
-                            figure=self.load_time_trend_graph(self.data_cleaned)
+                            # figure=self.load_time_trend_graph(self.data_cleaned)
                         ))
                 ]
             ),
@@ -141,11 +145,12 @@ class Utils:
         return (start_date_string, end_date_string)
 
     def aggregate_by_time(self, data):
+        # print(data["date"][0].utcoffset())
         data['hour'] = data.date.dt.hour
         data_grouped = data.groupby(data['hour']).size().reset_index(name ='count')
         data_grouped["h_percentage"] = data_grouped["count"]/len(data['hour']) *100
         data_grouped.index = data_grouped['hour']
-        return data_grouped.reindex(np.arange(0, 24 + 1), fill_value=0)
+        return data_grouped.reindex(np.arange(0, 23 + 1), fill_value=0)
 
     def filter_by_date_range_ads(self, start, stop):
         if start is not None and stop is not None:
@@ -164,9 +169,9 @@ class Utils:
 
     #region DOM components
     def load_scatter(self, data):
-        fig = px.scatter(x=data['date'],
-                y=data['viewCount'],
-                hover_name=data['title']
+        fig = px.scatter(x=self.data_cleaned['date'],
+                y=self.data_cleaned['viewCount'],
+                hover_name=self.data_cleaned['title']
                 )
 
         fig.update_xaxes(title="Date")
@@ -185,7 +190,7 @@ class Utils:
     def load_time_trend_graph(self, data):
         
         fig = go.Figure()
-        hour_data = self.aggregate_by_time(data)
+        hour_data = self.aggregate_by_time(self.data_cleaned)
         
         fig.add_trace(go.Scatter(y=hour_data['h_percentage'], x=hour_data.index, fill='tozeroy',
                             mode='none'
@@ -204,8 +209,8 @@ class Utils:
         date_span = []
         fig = go.Figure()
         genre = defaultdict(list)
-        grouped_data = data.groupby([pd.Grouper(key = 'date', freq='M')])
-        categories = set(data['categoryName'])
+        grouped_data = self.data_cleaned.groupby([pd.Grouper(key = 'date', freq='M')])
+        categories = set(self.data_cleaned['categoryName'])
 
         for r in grouped_data:
             if r[1].empty:
@@ -218,7 +223,6 @@ class Utils:
 
             for c in missing_groups:
                 tmpdf = pd.concat([tmpdf, pd.DataFrame.from_records([{"categoryName":c,"count":0}])])
-                # tmpdf=tmpdf.append({"categoryName":c,"count":0},ignore_index=True)
             
             for i,r in tmpdf.iterrows():
                 genre[r["categoryName"]].append(r["count"])
@@ -242,8 +246,8 @@ class Utils:
         return fig
 
     def load_graph(self, data):
-        ads = data.count()["details"]
-        total = data.count()["title"] - ads
+        ads = self.data.count()["details"]
+        total = self.data.count()["title"] - ads
 
         trace1 = go.Bar(    #setup the chart for Resolved records
             x=["Ads", "Videos"], #x for Resolved records

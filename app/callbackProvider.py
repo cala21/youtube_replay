@@ -1,4 +1,5 @@
 
+import time
 from dash.dependencies import Input, Output, State
 from utils import Utils
 
@@ -6,9 +7,9 @@ def get_callbacks(app):
     utils = Utils()
 
     @app.callback(Output('output-data-upload', 'children'),
-              Input('upload-data', 'contents'),
-              State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
+                Input('upload-data', 'contents'),
+                State('upload-data', 'filename'),
+                State('upload-data', 'last_modified'))
     def update_output(list_of_contents, list_of_names, list_of_dates):
         if list_of_contents is not None:
             children = [
