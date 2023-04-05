@@ -7,3 +7,5 @@ Takeout/*
 *.pyc
 .gcloudignore
 .zshrc
+app/sample_category.json
+app/sample.json

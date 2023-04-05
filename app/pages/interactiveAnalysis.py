@@ -33,7 +33,7 @@ layout = html.Div(
         #                 dbc.Col(html.Div("One of three columns")),
         #             ]
         #         ),
-        #         dbc.Col(dcc.Graph(id="my_graph",figure=historyAnalysis.fig1),width=9)
+        #         dbc.Col(dcc.Graph(id="ads-graph",figure=historyAnalysis.fig1),width=9)
         #     ]
         # )
     ]

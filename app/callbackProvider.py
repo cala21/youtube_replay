@@ -14,34 +14,42 @@ def get_callbacks(app):
             children = [
                 utils.parse_contents(c, n, d) for c, n, d in
                 zip(list_of_contents, list_of_names, list_of_dates)]
+
             return children
 
     @app.callback(
     Output('history-table', 'data'),
-    Input('date-picker-history', 'start_date'),
-    Input('date-picker-history', 'end_date'))
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
     def update_output(start_date, end_date):
         start_date_string, end_date_string =  utils.parse_date(start_date, end_date)
 
         return utils.filter_by_date_range(start_date_string, end_date_string)[["date","title"]].to_dict('records')
     
     @app.callback(
-    Output('my_graph', 'figure'),
-    Input('date-picker-history', 'start_date'),
-    Input('date-picker-history', 'end_date'))
+    Output('ads-graph', 'figure'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
     def update_graph(start_date, end_date):
-        start_date_string, end_date_string =  utils.parse_date(start_date, end_date)
-        data = utils.filter_by_date_range(start_date_string, end_date_string)
+        data = utils.filter_by_date_range_ads(start_date, end_date)
 
         return utils.load_graph(data)
     
     @app.callback(
-    Output('crossfilter-indicator-scatter', 'figure'),
-    Input('date-picker-history', 'start_date'),
-    Input('date-picker-history', 'end_date'))
+    Output('views-scatter', 'figure'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
     def update_scatter(start_date, end_date):
-        start_date_string, end_date_string =  utils.parse_date(start_date, end_date)
-        data = utils.filter_by_date_range(start_date_string, end_date_string)
+        data = utils.filter_by_date_range(start_date, end_date)
 
         return utils.load_scatter(data)
+    
+    @app.callback(
+    Output('genre-graph', 'figure'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
+    def update_genre_graph(start_date, end_date):
+        data = utils.filter_by_date_range(start_date, end_date)
+
+        return utils.load_genre_graph(data)
             
