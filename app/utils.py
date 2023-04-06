@@ -107,12 +107,12 @@ class Utils:
                     dbc.Col(
                         dcc.Graph(
                             id='views-scatter',
-                            # figure=self.load_scatter(self.data_cleaned)
+                            figure=self.load_scatter(self.data_cleaned)
                         )),
                     dbc.Col(
                         dcc.Graph(
                             id="ads-graph",
-                            # figure=self.load_graph(self.data)
+                            figure=self.load_graph(self.data)
                         ))
                 ]
             ),
@@ -121,12 +121,12 @@ class Utils:
                     dbc.Col(
                         dcc.Graph(
                             id='genre-graph',
-                            # figure=self.load_genre_graph(self.data_cleaned)
+                            figure=self.load_genre_graph(self.data_cleaned)
                         )),
                     dbc.Col(
                         dcc.Graph(
                             id='time-graph',
-                            # figure=self.load_time_trend_graph(self.data_cleaned)
+                            figure=self.load_time_trend_graph(self.data_cleaned)
                         ))
                 ]
             ),
@@ -169,9 +169,9 @@ class Utils:
 
     #region DOM components
     def load_scatter(self, data):
-        fig = px.scatter(x=self.data_cleaned['date'],
-                y=self.data_cleaned['viewCount'],
-                hover_name=self.data_cleaned['title']
+        fig = px.scatter(x=data['date'],
+                y=data['viewCount'],
+                hover_name=data['title']
                 )
 
         fig.update_xaxes(title="Date")
@@ -190,7 +190,7 @@ class Utils:
     def load_time_trend_graph(self, data):
         
         fig = go.Figure()
-        hour_data = self.aggregate_by_time(self.data_cleaned)
+        hour_data = self.aggregate_by_time(data)
         
         fig.add_trace(go.Scatter(y=hour_data['h_percentage'], x=hour_data.index, fill='tozeroy',
                             mode='none'
@@ -209,8 +209,8 @@ class Utils:
         date_span = []
         fig = go.Figure()
         genre = defaultdict(list)
-        grouped_data = self.data_cleaned.groupby([pd.Grouper(key = 'date', freq='M')])
-        categories = set(self.data_cleaned['categoryName'])
+        grouped_data = data.groupby([pd.Grouper(key = 'date', freq='M')])
+        categories = set(data['categoryName'])
 
         for r in grouped_data:
             if r[1].empty:
@@ -246,8 +246,8 @@ class Utils:
         return fig
 
     def load_graph(self, data):
-        ads = self.data.count()["details"]
-        total = self.data.count()["title"] - ads
+        ads = data.count()["details"]
+        total = data.count()["title"] - ads
 
         trace1 = go.Bar(    #setup the chart for Resolved records
             x=["Ads", "Videos"], #x for Resolved records
