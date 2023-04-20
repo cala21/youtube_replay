@@ -41,7 +41,7 @@ def test_api_request():
       API_SERVICE_NAME, API_VERSION, credentials=credentials)
   video_id = 'dQw4w9WgXcQ'
 
-  vidoes = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
+  vidoes = youtube.channels().list(part='snippet,statistics', mine=True).execute()
   #channels = youtube.channels().list(part='snippet,statistics', id=video_id).execute()
 
   # Save credentials back to session in case access token was refreshed.
