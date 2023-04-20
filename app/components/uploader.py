@@ -18,12 +18,12 @@ def uploader():
                 'borderStyle': 'dashed',
                 'borderRadius': '5px',
                 'textAlign': 'center',
-                'margin': '10px'
+                'margin': '30px'
             },
             # Allow multiple files to be uploaded
             multiple=True
         ),
-        dbc.Spinner(children=[
+        dbc.Spinner(color="primary" , children=[
             html.Div(id='output-data-upload')
-        ],fullscreen=True)
+        ])
     ])
