@@ -28,4 +28,16 @@ def header():
                 vertical=True,
             ),
             html.Hr(),
+            html.Div(children=[
+                html.P(children=[
+                'Copyright ',
+                html.Span('©', className='copy'),
+                ' 2023 YouTube Replay.', 
+                html.Br(),
+                'Licensed under the ',
+                html.A('MIT License', href='https://opensource.org/licenses/MIT'),
+                '.'
+                ])
+                ], className='footer'
+            )
     ])

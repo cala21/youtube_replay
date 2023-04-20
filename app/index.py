@@ -42,8 +42,9 @@ index_layout = html.Div(
             html.Li('Watched Video - Time of Day Trend'),
             html.Li('Recommendations based on your viewing history and preferences! (not Youtube\'s algorithm)')
         ], style={'textAlign': 'justify', 'marginLeft': '20px', 'marginTop': '10px'}),
-        html.P("But that's not all! YouTube Replay is also an excellent tool for researchers and analysts. Our app provides a comprehensive view of your viewing history, including insights and trends. You can use this data to analyze your viewing habits and gain valuable insights into your interests and behaviors.", style={'textAlign': 'justify'}),
-        html.P("Whether you're looking to relive your favorite moments on YouTube or analyze your viewing history for research purposes, YouTube Replay is the perfect tool for you.", style={'textAlign': 'justify'}),
+        html.P("YouTube Replay is being built as a useful tool for researchers and data enthusiasts. The goal of the app is to provide a comprehensive view of your viewing history, including insights and trends.", style={'textAlign': 'justify'}),
+        html.P("You can use this data to analyze your viewing habits on YouTube and gain valuable insights into your interests and behaviors.", style={'textAlign': 'justify'}),
+        html.P("Whether you're taking a walk down the YouTube memory-lane or analyze your viewing history for research purposes, we hope that YouTube Replay is the perfect tool for you.", style={'textAlign': 'justify'}),
         html.Hr(),
         html.Div(children=[
             html.P(children=[
