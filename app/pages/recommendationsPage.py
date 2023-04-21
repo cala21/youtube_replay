@@ -8,13 +8,24 @@ layout = html.Div(
         dbc.Row(header.header()),
         html.P(
             children=(
-                "Login : Page"
+                "Personalized Recommendation"
             ),
         ),
+        
+        html.Hr(),
+
         html.Div(
         [
-            html.Button("Get YouTube Data for User", id="btn-google", hidden=True),
+            html.Button("Get Connected User Info", id="btn-user"),
             html.Div(id="youtube-data"),
+        ]),
+
+        html.Hr(),
+
+        html.Div(
+        [
+            html.Button("Get Recommended Videos for User", id="btn-rec-data"),
+            html.Div(id="youtube-rec-data"),
         ]),
 
         html.Hr(),

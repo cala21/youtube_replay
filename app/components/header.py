@@ -21,8 +21,6 @@ def header():
                     dbc.NavLink("How To Use?", href="/help-page",active="exact"),
                     dbc.NavLink("History Analysis", href="/history-analysis",active="exact"),
                     dbc.NavLink("Personalized Recommendations", href="/recommendations",active="exact"),
-                    dbc.NavLink("Login", href="/login",active="exact")
-
                 ],
                 pills=True,
                 vertical=True,

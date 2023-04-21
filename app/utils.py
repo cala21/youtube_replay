@@ -23,9 +23,8 @@ class Utils:
 
     def __init__(self):
         self.data = []
-        # self.yth = YoutubeHelper("<API_KEY>")
-        self.yth = YoutubeHelper("AIzaSyAS-XilQyP6rf6C63_0Rf0oxfOqnLEMHkU")
-        # self.yth = YoutubeHelper("AIzaSyDA76LlJSSN3BFwJhE9Uj1dFSHcmDMsusQ")
+        self.yth = YoutubeHelper("API_KEY")
+
 
     #region Youtube API data cleaning  
     def clean_video_details(self):
@@ -288,6 +287,37 @@ class Utils:
 
         return fig1
     
+    def videos_rec(self, video_data):
+        print (video_data)
+        if len(video_data) > 0:
+            return html.Div([
+                html.H1('Recommended YouTube Videos'),
+                html.Table([
+                    html.Thead(html.Tr([
+                        html.Th('Thumbnail'),
+                        html.Th('Title'),
+                        html.Th('Channel'),
+                        html.Th('Views'),
+                        html.Th('Likes'),
+                        html.Th('Dislikes')
+                    ])),
+                    html.Tbody([
+                        html.Tr([
+                            html.Td(html.Img(src=video['thumbnail'], height='90px')),
+                            html.Td(html.A(video['title'], href=video['url'], target='_blank')),
+                            html.Td(video['channel']),
+                            html.Td(video['views']),
+                            html.Td(video['likes']),
+                        ]) for video in video_data
+                    ])
+                ])
+            ])
+        else:
+            return html.Div([
+                html.H1('No recommended videos found')
+            ])
+        
+
     def load_word_cloud(self, data):
         
         # Create the mask
@@ -363,4 +393,5 @@ class Utils:
         # Output to make  the function only return the image and the figure
         # [[image source, width, height], bar chart]
         return [[src, image.size[0], image.size[1]], fig]
+
     #endregion
