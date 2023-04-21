@@ -15,11 +15,16 @@ import warnings; warnings.filterwarnings("ignore")
 
 import pandas as pd
 
+# Added for word cloud
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from PIL import Image
+
 class Utils:
 
     def __init__(self):
         self.data = []
         self.yth = YoutubeHelper("API_KEY")
+
 
     #region Youtube API data cleaning  
     def clean_video_details(self):
@@ -89,6 +94,7 @@ class Utils:
                 'There was an error processing this file.'
             ])
         
+        cloud = self.load_word_cloud(self.data_cleaned)
         return html.Div([
                 filter.filter_by_date(self.data['date'].min(), self.data['date'].max()),
                 dbc.Row(
@@ -129,6 +135,20 @@ class Utils:
                             figure=self.load_time_trend_graph(self.data_cleaned)
                         ))
                 ]
+            ),
+            # dbc.Row(
+            #     children=self.load_word_cloud(self.data_cleaned)
+            # ),
+            dbc.Row(
+                dbc.Col([
+                    html.Img(id='word-cloud', src=cloud[0][0], width=cloud[0][1], height=cloud[0][2],
+                                style={'maxWidth': 'auto', 'height': 'auto',
+                                        'margin': '0 auto', 'display': 'block'}),
+                    html.Details([
+                                html.Summary('View Frequency Plot'),
+                                dcc.Graph(id='word-freq', figure=cloud[1], config={'displayModeBar': False})
+                    ])
+                ])    
             ),
             html.Hr()
         ])
@@ -297,4 +317,81 @@ class Utils:
                 html.H1('No recommended videos found')
             ])
         
+
+    def load_word_cloud(self, data):
+        
+        # Create the mask
+        logo_mask = np.array(Image.open('./assets/youtube_logo.png'))
+        # print(logo_mask)
+        
+        # Concatanate every entry in the table to one string        
+        text = ""
+        data = data.drop_duplicates()
+        data = data.sort_values(by="viewCount", ascending=False)
+        data = data[:200]
+        for ind in data.index:
+            text = text + " " + data['title'][ind]
+        
+        # Create word cloud!
+        cloud = WordCloud(width=400, height=200, mask=logo_mask, background_color='black',
+                      stopwords=STOPWORDS, max_words=50,
+                      max_font_size=40, min_font_size=10,
+                      random_state=19, scale=1, mode='RGB',
+                      relative_scaling='auto', min_word_length=2, prefer_horizontal=0.4).generate(text)
+        try:
+            coloring = ImageColorGenerator(logo_mask)
+            cloud.recolor(color_func=coloring)
+        except:
+            pass
+        image = cloud.to_image()
+    
+        # Create bar chart
+        byte_io = io.BytesIO()
+        image.save(byte_io, 'PNG')
+        byte_io.seek(0)
+        data_uri = base64.b64encode(byte_io.getvalue()).decode('utf-8').replace('\n', '')
+        src = 'data:image/png;base64,{0}'.format(data_uri)
+        x = np.array(list(cloud.words_.keys()))
+        y = np.array(list(cloud.words_.values()))
+        order = np.argsort(y)[::-1]
+        x = x[order]
+        y = y[order]
+        trace = go.Bar(x=x, y=y)
+        layout = go.Layout(margin=go.layout.Margin(l=10, r=00),
+                            title='Relative frequency of words')
+        fig = go.Figure(data=[trace], layout=layout)
+        
+        # Create graphics to pass back
+        # This version puts the cloud and freq charts next to each other
+        # children = [
+        #     dbc.Col(
+        #         html.Img(id='word-cloud', src=src, width=image.size[0], height=image.size[1],
+        #             style={'maxWidth': 'auto', 'height': 'auto',
+        #                     'margin': '0 auto', 'display': 'block'})),
+        #     dbc.Col(
+        #         html.Details([
+        #             html.Summary('View Frequency Plot'),
+        #             dcc.Graph(id='word-freq', figure=fig, config={'displayModeBar': False})
+        #         ])
+        #     )
+        # ]
+        
+        # This version puts the freq chart under the cloud
+        # children = [
+        #     dbc.Col([
+        #         html.Img(id='word-cloud', src=src, width=image.size[0], height=image.size[1],
+        #                     style={'maxWidth': 'auto', 'height': 'auto',
+        #                             'margin': '0 auto', 'display': 'block'}),
+        #         html.Details([
+        #                     html.Summary('View Frequency Plot'),
+        #                     dcc.Graph(id='word-freq', figure=fig, config={'displayModeBar': False})
+        #         ])
+        #     ])    
+        # ]
+        # return children
+        
+        # Output to make  the function only return the image and the figure
+        # [[image source, width, height], bar chart]
+        return [[src, image.size[0], image.size[1]], fig]
+
     #endregion
