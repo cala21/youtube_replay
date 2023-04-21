@@ -72,20 +72,20 @@ def revoke():
 @server.route('/clear')
 def clear_credentials():
   if 'credentials' in flask.session:
-    print("Deleting Credentials")
+    print("Deleting credentials.")
     del flask.session['credentials']
 
     return ('Credentials have been cleared.<br><br>')
 
   else:
-    print("Cannot Delete Credentials")
+    print("Cannot delete credentials.")
     return ('Credentials are not present and cannot be cleared.<br><br>')
 
 @server.route('/logout')
 def logout():
   logout_url ='https://accounts.google.com/Logout'
   if 'credentials' in flask.session:
-    print("Deleting Credentials")
+    print("Deleting credentials.")
     del flask.session['credentials']
   return flask.redirect(logout_url)
 

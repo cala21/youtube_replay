@@ -1,7 +1,4 @@
-import dash_bootstrap_components as dbc
 from dash import dcc, html
-from components import header
-
 
 layout = html.Div(children=[
     html.H1(children="How to use the YouTube Replay app"),

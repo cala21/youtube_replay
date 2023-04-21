@@ -20,9 +20,8 @@ class YouTubeOAuthClient:
         authorization_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true')
-        print("adding state")
+        print("Saving state in session.")
         flask.session['state'] = state
-        print(authorization_url)
         return authorization_url
     
     def fetch_creds(self):

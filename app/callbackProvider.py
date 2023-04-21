@@ -1,5 +1,4 @@
 
-import time
 from dash.dependencies import Input, Output, State
 from utils import Utils
 from YouTubeOAuthClient import YouTubeOAuthClient
@@ -84,7 +83,7 @@ def get_callbacks(app):
         )
     def connect_with_google(n_clicks):
         if 'credentials' not in flask.session:
-            print("Creds not in Session")
+            print("Credentials not in session.")
             auth_url = youtube.get_auth_url()
             return html.A('Connect with YouTube Account', href=auth_url)
         else:
@@ -111,5 +110,5 @@ def get_callbacks(app):
     def clear_credentials(n_clicks):
         if n_clicks:
             youtube.clear_credentials()
-            print("Credentials Cleared")
+            print("Credentials cleared.")
             return 0
