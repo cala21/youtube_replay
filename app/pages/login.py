@@ -1,7 +1,7 @@
-import pandas as pd
 import dash_bootstrap_components as dbc
 from dash import html
-from components import header, authorization
+from components import header
+
 
 layout = html.Div(
     children=[
@@ -11,14 +11,23 @@ layout = html.Div(
                 "Login : Page"
             ),
         ),
+        html.Div(
+        [
+            html.Button("Get YouTube Data for User", id="btn-google", hidden=True),
+            html.Div(id="youtube-data"),
+        ]),
 
         html.Hr(),
-        authorization.login_button(),
-        html.Hr(),
-        authorization.login_table(),
-        authorization.logout_button()
+
+        html.Div(
+        [
+            html.Button("Clear creds", id="btn-creds"),
+            html.Div(id="youtube-creds-clear"),
+        ]),
     ]
 )
+
+
 
 '''
 # Request body

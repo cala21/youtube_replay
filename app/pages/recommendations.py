@@ -18,7 +18,7 @@ layout = html.Div(
         dbc.Row(header.header()),
         html.P(
             children=(
-                "Interactive Analysis "
+                "Personalized Recommendation"
             ),
         ),
 

@@ -1,0 +1,14 @@
+.footer {
+    text-align: center;
+    font-size: 12px;
+    }
+    
+    .footer ul {
+    display: inline-block;
+    text-align: left;
+    }
+    
+    .footer li {
+    list-style-position: inside;
+    margin-bottom: 5px;
+    }

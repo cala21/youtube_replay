@@ -1,5 +1,5 @@
 import index
-import oauth
+import YouTubeOAuthFlaskServer
 import os
 
 if __name__ == '__main__':
