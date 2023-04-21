@@ -62,4 +62,21 @@ def get_callbacks(app):
         data = utils.filter_by_date_range(start_date, end_date)
 
         return utils.load_time_trend_graph(data)
+    
+    @app.callback(
+    [Output('word-cloud', 'src'),
+     Output('word-cloud', 'width'),
+     Output('word-cloud', 'height'),
+     Output('word-freq', 'figure')],
+    [Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date')])
+    # def update_word_cloud(start_date, end_date):
+    #     data = utils.filter_by_date_range(start_date, end_date)
+        
+    #     return utils.load_word_cloud(data)
+    def update_word_cloud(start_date, end_date):
+        data = utils.filter_by_date_range(start_date, end_date)
+        output = utils.load_word_cloud(data)
+        src, width, height, figure = output[0][0], output[0][1], output[0][2], output[1]
+        return src, width, height, figure
             
