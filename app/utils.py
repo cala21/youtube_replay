@@ -19,7 +19,7 @@ class Utils:
 
     def __init__(self):
         self.data = []
-        self.yth = YoutubeHelper("AIzaSyCeFlaxS4r_4d2cLcGXKvcP0gvQBWY2rFg")
+        self.yth = YoutubeHelper("API_KEY")
 
     #region Youtube API data cleaning  
     def clean_video_details(self):
@@ -296,4 +296,5 @@ class Utils:
             return html.Div([
                 html.H1('No recommended videos found')
             ])
+        
     #endregion
