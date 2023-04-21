@@ -1,37 +1,35 @@
-import dash
-import dash_bootstrap_components as dbc
 from dash import dcc 
 from dash import html
 from dash.dependencies import Input, Output
 
 from replayApp import app
 from pages import historyAnalysis
-from pages import interactiveAnalysis
-from pages import login
+from pages import recommendationsPage
+from pages import helpPage
+from pages import homePage
 from components import header
 from callbackProvider import get_callbacks
 
-page_container = html.Div(
-    children=[
-        dcc.Location(
-            id='url',
-            refresh=False,
-        ),
-        html.Div(id='page-content')
-    ]
-)
 
-index_layout = dbc.Row(header.header())
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+
+content = html.Div(id="page-content", style=CONTENT_STYLE)
+
+page_container = html.Div([dcc.Location(id="url"), header.header(), content])
 
 app.layout = page_container
 
 app.validation_layout = html.Div(
     children = [
         page_container,
-        index_layout,
+        homePage.layout,
+        helpPage.layout,
         historyAnalysis.layout,
-        interactiveAnalysis.layout,
-        login.layout,
+        recommendationsPage.layout,
     ]
 )
 
@@ -48,13 +46,13 @@ get_callbacks(app)
 )
 
 def display_page(pathname):
-    if pathname == '/':
-        return index_layout
+    if pathname == '/' or pathname == '/home':
+        return homePage.layout
+    elif pathname == '/help-page':
+        return helpPage.layout
     elif pathname == '/history-analysis':
         return historyAnalysis.layout
-    elif pathname == '/interactive-analysis':
-        return interactiveAnalysis.layout
-    elif pathname == '/login':
-        return login.layout
+    elif pathname == '/recommendations':
+        return recommendationsPage.layout
     else:
         return '404'

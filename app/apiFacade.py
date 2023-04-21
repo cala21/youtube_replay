@@ -47,4 +47,4 @@ class YoutubeHelper:
 if __name__ == "__main__":
     yth = YoutubeHelper("<API_KEY>")
     # yth.get_video_details("b5EoidxBSTE,KIhKho9ZYiQ,W6mRkmbn7Kk,N-etpkOVBMM,E_KbZOJp7Vw,zzs9uoTy3pg")
-    print(yth.get_video_category("US"))
+    # print(yth.get_video_category("US"))

@@ -9,7 +9,6 @@ import googleapiclient.discovery
 import os
 from config.definitions import ROOT_DIR
 
-print(os.path.join(ROOT_DIR, 'assets', 'client_secret.json'))
 
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
@@ -18,8 +17,7 @@ CLIENT_SECRETS_FILE = os.path.join(ROOT_DIR, 'assets', 'client_secret.json')
 # This OAuth 2.0 access scope allows for full read/write access to the
 # authenticated user's account and requires requests to use an SSL connection.
 SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
-API_SERVICE_NAME = 'youtube'
-API_VERSION = 'v3'
+
 
 #App Secret
 server = index.app.server
@@ -27,62 +25,8 @@ server.config.update(
     SECRET_KEY=os.urandom(12),
 )
 
-@server.route('/test')
-def test_api_request():
-  if 'credentials' not in flask.session:
-    print("Creds not in Session")
-    return flask.redirect('authorize')
-  
-  # Load credentials from the session.
-  credentials = google.oauth2.credentials.Credentials(
-      **flask.session['credentials'])
-
-  youtube = googleapiclient.discovery.build(
-      API_SERVICE_NAME, API_VERSION, credentials=credentials)
-  video_id = 'dQw4w9WgXcQ'
-
-  vidoes = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
-  #channels = youtube.channels().list(part='snippet,statistics', id=video_id).execute()
-
-  # Save credentials back to session in case access token was refreshed.
-  # ACTION ITEM: In a production app, you likely want to save these
-  #              credentials in a persistent database instead.
-  flask.session['credentials'] = credentials_to_dict(credentials)
-
-  return flask.jsonify(**vidoes)
-
-
-@server.route('/authorize')
-def authorize():
-  print("In Authorization")
-
-  # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-  flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-      CLIENT_SECRETS_FILE, scopes=SCOPES)
-
-  # The URI created here must exactly match one of the authorized redirect URIs
-  # for the OAuth 2.0 client, which you configured in the API Console. If this
-  # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
-  # error.
-  flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
-
-  authorization_url, state = flow.authorization_url(
-      # Enable offline access so that you can refresh an access token without
-      # re-prompting the user for permission. Recommended for web server apps.
-      access_type='offline',
-      # Enable incremental authorization. Recommended as a best practice.
-      include_granted_scopes='true')
-
-  # Store the state so the callback can verify the auth server response.
-  print(state)
-  flask.session['state'] = state
-
-  return flask.redirect(authorization_url)
-
-
 @server.route('/oauth2callback')
 def oauth2callback():
-  print("In Oauth Callback")
 
   # Specify the state when creating the flow in the callback so that it can
   # verified in the authorization server response.
@@ -100,11 +44,9 @@ def oauth2callback():
   # ACTION ITEM: In a production app, you likely want to save these
   #              credentials in a persistent database instead.
   credentials = flow.credentials
-  print(credentials)
 
   flask.session['credentials'] = credentials_to_dict(credentials)
-  print(flask.session['credentials'] )
-  return flask.redirect(flask.url_for('test_api_request'))
+  return flask.redirect('recommendations')
 
 
 @server.route('/revoke')
@@ -130,21 +72,20 @@ def revoke():
 @server.route('/clear')
 def clear_credentials():
   if 'credentials' in flask.session:
-    print("Deleting Credentials")
-    print(flask.session['credentials'] )
+    print("Deleting credentials.")
     del flask.session['credentials']
 
     return ('Credentials have been cleared.<br><br>')
 
   else:
-    print("Cannot Delete Credentials")
+    print("Cannot delete credentials.")
     return ('Credentials are not present and cannot be cleared.<br><br>')
 
 @server.route('/logout')
 def logout():
   logout_url ='https://accounts.google.com/Logout'
   if 'credentials' in flask.session:
-    print("Deleting Credentials")
+    print("Deleting credentials.")
     del flask.session['credentials']
   return flask.redirect(logout_url)
 
