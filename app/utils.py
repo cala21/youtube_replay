@@ -304,8 +304,8 @@ class Utils:
         
         # Create word cloud!
         cloud = WordCloud(width=400, height=200, mask=logo_mask, background_color='black',
-                      stopwords=STOPWORDS, max_words=40,
-                      max_font_size=50, min_font_size=10,
+                      stopwords=STOPWORDS, max_words=50,
+                      max_font_size=40, min_font_size=10,
                       random_state=19, scale=1, mode='RGB',
                       relative_scaling='auto', min_word_length=2, prefer_horizontal=0.4).generate(text)
         try:
