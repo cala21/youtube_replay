@@ -11,7 +11,7 @@ def get_callbacks(app):
     utils = Utils()
     # Create an instance of the YouTubeOAuthClient class
     # Define the scopes and client secrets file
-    print(os.path.join(ROOT_DIR, 'assets', 'client_secret.json'))
+    #print(os.path.join(ROOT_DIR, 'assets', 'client_secret.json'))
 
     # This variable specifies the name of a file that contains the OAuth 2.0
     # information for this application, including its client_id and client_secret.
@@ -94,11 +94,6 @@ def get_callbacks(app):
                     part="snippet,statistics",
                     mine=True,
                 )
-                print(data)
-                #video_data = youtube.get_rec_data()
-                #print(video_data)
-                #utils.videos_rec(video_data)
-                # Return the data as a Dash component
                 return html.Div([
                     html.H1(data["items"][0]["snippet"]["title"]),
                     html.Img(src=data["items"][0]["snippet"]["thumbnails"]["medium"]["url"]),
@@ -117,7 +112,6 @@ def get_callbacks(app):
     def get_rec_videos(n_clicks):
         if n_clicks:
                 video_data = youtube.get_rec_data()
-                print(video_data)
                 return utils.videos_rec(video_data)
         else :
             return ""

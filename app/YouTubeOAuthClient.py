@@ -4,6 +4,28 @@ import googleapiclient.discovery
 from google.auth.transport.requests import Request
 from googleapiclient.errors import HttpError
 import flask
+from cachetools import TTLCache
+from functools import wraps
+
+# Define global cache
+video_data_cache = {}
+
+def cache_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # Generate cache key based on function name and arguments
+        cache_key = f'{func.__name__}:{str(args)}:{str(kwargs)}'
+        # Check if result is already cached
+        if cache_key in video_data_cache:
+            print(f'Returning cached result for {cache_key}')
+            return video_data_cache[cache_key]
+        else:
+            # Call function and store result in cache
+            print(f'Caching result for {cache_key}')
+            result = func(*args, **kwargs)
+            video_data_cache[cache_key] = result
+            return result
+    return wrapper
 
 #YouTubeOauthClient
 class YouTubeOAuthClient:
@@ -51,7 +73,8 @@ class YouTubeOAuthClient:
         except HttpError as error:
             print(f"An error occurred: {error}")
             return None
-        
+    
+    @cache_decorator
     def get_rec_data(self):
         if not self.credentials or not self.credentials.valid:
             if self.credentials and self.credentials.expired and self.credentials.refresh_token:
@@ -62,39 +85,36 @@ class YouTubeOAuthClient:
             youtube = googleapiclient.discovery.build("youtube", "v3", credentials=self.credentials)
             videos_response = youtube.videos().list(myRating='like', part='snippet').execute()
             video_ids = [item['id'] for item in videos_response['items']]
-            print("video_ids")
-
-            print(video_ids)
-
-            recommendations = []
+            recommendations = set()
             video_data = []
+            video_response =[]
             for video_id in video_ids:
                 recommendations_response = youtube.search().list(relatedToVideoId=video_id, type='video', part='snippet').execute()
-                recommendations.extend([item['id']['videoId'] for item in recommendations_response['items']])
-            print(recommendations)
-            for video_id in recommendations:
-                video_response = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
-                print(video_response['items'][0]['statistics'])
-                print(video_response['items'][0]['snippet'])
+                recommendations.update(item['id']['videoId'] for item in recommendations_response.get('items', []))
+            for recommendation_id in recommendations:
+                video_response = youtube.videos().list(part='snippet,statistics', id=recommendation_id).execute()
+                video_items = video_response.get('items', [])     
 
-                video_title = video_response['items'][0]['snippet']['title']
-                video_channel = video_response['items'][0]['snippet']['channelTitle']
-                video_views = video_response['items'][0]['statistics'].get('viewCount', 0)
-                video_likes = video_response['items'][0]['statistics'].get('likeCount', 0)
-                video_thumbnail = video_response['items'][0]['snippet']['thumbnails']['default']['url']
-                video_url = f"https://www.youtube.com/watch?v={video_id}"
-                video_data.append({'title': video_title, 'channel': video_channel, 'views': video_views, 'likes': video_likes, 'thumbnail': video_thumbnail, 'url': video_url})
-
+                if len(video_items) > 0:
+                    video_item = video_items[0]
+                    video_title = video_item['snippet']['title']
+                    video_channel = video_item['snippet']['channelTitle']
+                    video_views = video_item['statistics'].get('viewCount', 0)
+                    video_likes = video_item['statistics'].get('likeCount', 0)
+                    video_thumbnail = video_item['snippet']['thumbnails']['default']['url']
+                    video_url = f"https://www.youtube.com/watch?v={recommendation_id}"
+                    video_description = video_item['snippet'].get('description', '')[:100]
+                    
+                    #if video_description.strip() != '':
+                    video_data.append({'title': video_title, 'description': video_description, 'channel': video_channel, 'views': video_views, 'likes': video_likes, 'thumbnail': video_thumbnail, 'url': video_url})
+            print(f'Title: {video_title}\nChannel: {video_channel}\nViews: {video_views}\nLikes: {video_likes}\n, Thumbnail: {video_thumbnail}, url {video_url}')
             return video_data
 
-                #print(f'Title: {video_title}\nChannel: {video_channel}\nViews: {video_views}\nLikes: {video_likes}\n, Thumbnail: {video_thumbnail}, url {video_url}')
                     
         except HttpError as error:
             print(f"An error occurred: {error}")
             return None
-        
-
-        
+             
     def revoke_credentials(self):
         if self.credentials:
             http = self.credentials.authorize(Request())
