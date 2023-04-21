@@ -19,7 +19,7 @@ class Utils:
 
     def __init__(self):
         self.data = []
-        self.yth = YoutubeHelper("<API_KEY>")
+        self.yth = YoutubeHelper("AIzaSyCeFlaxS4r_4d2cLcGXKvcP0gvQBWY2rFg")
 
     #region Youtube API data cleaning  
     def clean_video_details(self):
@@ -266,4 +266,34 @@ class Utils:
         )
 
         return fig1
+    
+    def videos_rec(self, video_data):
+        print (video_data)
+        if len(video_data) > 0:
+            return html.Div([
+                html.H1('Recommended YouTube Videos'),
+                html.Table([
+                    html.Thead(html.Tr([
+                        html.Th('Thumbnail'),
+                        html.Th('Title'),
+                        html.Th('Channel'),
+                        html.Th('Views'),
+                        html.Th('Likes'),
+                        html.Th('Dislikes')
+                    ])),
+                    html.Tbody([
+                        html.Tr([
+                            html.Td(html.Img(src=video['thumbnail'], height='90px')),
+                            html.Td(html.A(video['title'], href=video['url'], target='_blank')),
+                            html.Td(video['channel']),
+                            html.Td(video['views']),
+                            html.Td(video['likes']),
+                        ]) for video in video_data
+                    ])
+                ])
+            ])
+        else:
+            return html.Div([
+                html.H1('No recommended videos found')
+            ])
     #endregion

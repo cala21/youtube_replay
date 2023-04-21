@@ -79,19 +79,25 @@ def get_callbacks(app):
     # Define a callback function to handle the button click event
     @app.callback(
         Output("youtube-data", "children"),
-        [Input("btn-google", "n_clicks")],
+        [Input("btn-user", "n_clicks")],
         )
     def connect_with_google(n_clicks):
-        if 'credentials' not in flask.session:
-            print("Credentials not in session.")
-            auth_url = youtube.get_auth_url()
-            return html.A('Connect with YouTube Account', href=auth_url)
-        else:
+        if n_clicks:
+            if 'credentials' not in flask.session:
+                print("Credentials not in session.")
+                auth_url = youtube.get_auth_url()
+                return html.A('Connect with YouTube Account', href=auth_url)
+            else:
+                flask.session['status'] = 'logged'
                 youtube.fetch_creds()
                 data = youtube.get_channel_data(
                     part="snippet,statistics",
                     mine=True,
                 )
+                print(data)
+                #video_data = youtube.get_rec_data()
+                #print(video_data)
+                #utils.videos_rec(video_data)
                 # Return the data as a Dash component
                 return html.Div([
                     html.H1(data["items"][0]["snippet"]["title"]),
@@ -100,11 +106,26 @@ def get_callbacks(app):
                     html.P(f"Total views: {data['items'][0]['statistics']['viewCount']}"),
                     html.P(f"Total videos: {data['items'][0]['statistics']['videoCount']}"),
                     ])
-
+        else :
+            return ""
         
     # Define a callback function to handle the button click event
     @app.callback(
-        Output("btn-google", "n_clicks"),
+        Output("youtube-rec-data", "children"),
+        [Input("btn-rec-data", "n_clicks")],
+        )
+    def get_rec_videos(n_clicks):
+        if n_clicks:
+                video_data = youtube.get_rec_data()
+                print(video_data)
+                return utils.videos_rec(video_data)
+        else :
+            return ""
+
+
+    # Define a callback function to handle the button click event
+    @app.callback(
+        Output("btn-user", "n_clicks"),
         [Input("btn-creds", "n_clicks")],
         )
     def clear_credentials(n_clicks):

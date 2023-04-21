@@ -46,7 +46,7 @@ def oauth2callback():
   credentials = flow.credentials
 
   flask.session['credentials'] = credentials_to_dict(credentials)
-  return flask.redirect('login')
+  return flask.redirect('recommendations')
 
 
 @server.route('/revoke')

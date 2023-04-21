@@ -52,6 +52,46 @@ class YouTubeOAuthClient:
             print(f"An error occurred: {error}")
             return None
         
+    def get_rec_data(self):
+        if not self.credentials or not self.credentials.valid:
+            if self.credentials and self.credentials.expired and self.credentials.refresh_token:
+                self.credentials.refresh(Request())
+            else:
+                self.authenticate()
+        try:
+            youtube = googleapiclient.discovery.build("youtube", "v3", credentials=self.credentials)
+            videos_response = youtube.videos().list(myRating='like', part='snippet').execute()
+            video_ids = [item['id'] for item in videos_response['items']]
+            print("video_ids")
+
+            print(video_ids)
+
+            recommendations = []
+            video_data = []
+            for video_id in video_ids:
+                recommendations_response = youtube.search().list(relatedToVideoId=video_id, type='video', part='snippet').execute()
+                recommendations.extend([item['id']['videoId'] for item in recommendations_response['items']])
+            print(recommendations)
+            for video_id in recommendations:
+                video_response = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
+                video_title = video_response['items'][0]['snippet']['title']
+                video_channel = video_response['items'][0]['snippet']['channelTitle']
+                video_views = video_response['items'][0]['statistics']['viewCount']
+                video_likes = video_response['items'][0]['statistics']['likeCount']
+                video_thumbnail = video_response['items'][0]['snippet']['thumbnails']['default']['url']
+                video_url = f"https://www.youtube.com/watch?v={video_id}"
+                video_data.append({'title': video_title, 'channel': video_channel, 'views': video_views, 'likes': video_likes, 'thumbnail': video_thumbnail, 'url': video_url})
+            
+            return video_data
+
+                #print(f'Title: {video_title}\nChannel: {video_channel}\nViews: {video_views}\nLikes: {video_likes}\n, Thumbnail: {video_thumbnail}, url {video_url}')
+                    
+        except HttpError as error:
+            print(f"An error occurred: {error}")
+            return None
+        
+
+        
     def revoke_credentials(self):
         if self.credentials:
             http = self.credentials.authorize(Request())

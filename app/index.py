@@ -4,8 +4,7 @@ from dash.dependencies import Input, Output
 
 from replayApp import app
 from pages import historyAnalysis
-from pages import recommendations
-from pages import login
+from pages import recommendationsPage
 from pages import helpPage
 from pages import homePage
 from components import header
@@ -30,8 +29,7 @@ app.validation_layout = html.Div(
         homePage.layout,
         helpPage.layout,
         historyAnalysis.layout,
-        recommendations.layout,
-        login.layout,
+        recommendationsPage.layout,
     ]
 )
 
@@ -55,8 +53,6 @@ def display_page(pathname):
     elif pathname == '/history-analysis':
         return historyAnalysis.layout
     elif pathname == '/recommendations':
-        return recommendations.layout
-    elif pathname == '/login':
-        return login.layout
+        return recommendationsPage.layout
     else:
         return '404'
