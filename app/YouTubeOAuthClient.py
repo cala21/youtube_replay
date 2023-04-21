@@ -74,14 +74,17 @@ class YouTubeOAuthClient:
             print(recommendations)
             for video_id in recommendations:
                 video_response = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
+                print(video_response['items'][0]['statistics'])
+                print(video_response['items'][0]['snippet'])
+
                 video_title = video_response['items'][0]['snippet']['title']
                 video_channel = video_response['items'][0]['snippet']['channelTitle']
-                video_views = video_response['items'][0]['statistics']['viewCount']
-                video_likes = video_response['items'][0]['statistics']['likeCount']
+                video_views = video_response['items'][0]['statistics'].get('viewCount', 0)
+                video_likes = video_response['items'][0]['statistics'].get('likeCount', 0)
                 video_thumbnail = video_response['items'][0]['snippet']['thumbnails']['default']['url']
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 video_data.append({'title': video_title, 'channel': video_channel, 'views': video_views, 'likes': video_likes, 'thumbnail': video_thumbnail, 'url': video_url})
-            
+
             return video_data
 
                 #print(f'Title: {video_title}\nChannel: {video_channel}\nViews: {video_views}\nLikes: {video_likes}\n, Thumbnail: {video_thumbnail}, url {video_url}')
