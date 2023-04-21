@@ -327,7 +327,7 @@ class Utils:
         x = x[order]
         y = y[order]
         trace = go.Bar(x=x, y=y)
-        layout = go.Layout(margin=go.Margin(l=10, r=00),
+        layout = go.Layout(margin=go.layout.Margin(l=10, r=00),
                             title='Relative frequency of words')
         fig = go.Figure(data=[trace], layout=layout)
         
