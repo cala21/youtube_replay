@@ -14,15 +14,19 @@ layout = html.Div(
         ),
         html.Div(
         [
-            html.Button("Connect with Google", id="btn-google"),
+            html.Button("Get YouTube Data for User", id="btn-google", hidden=True),
             html.Div(id="youtube-data"),
-        ]
-        )
+        ]),
 
+        html.Hr(),
+        #authorization.login_button(),
         # html.Hr(),
-        # authorization.login_button(),
-        # html.Hr(),
-        # authorization.login_table(),
+        html.Div(
+        [
+            html.Button("Clear creds", id="btn-creds"),
+            html.Div(id="youtube-creds-clear"),
+        ]),
+       # authorization.login_table(),
         # authorization.logout_button()
 
     ]

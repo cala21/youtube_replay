@@ -1,25 +1,41 @@
-import os
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import Flow
 import googleapiclient.discovery
 from google.auth.transport.requests import Request
 from googleapiclient.errors import HttpError
 import flask
 
-class YouTubeOAuth:
+#YouTubeOauthClient
+class YouTubeOAuthClient:
     def __init__(self, scopes, client_secrets_file):
         self.scopes = scopes
         self.client_secrets_file = client_secrets_file
         self.credentials = None
    
-    def authenticate(self):
-        """Authenticates the user and stores the credentials."""
-        flow = InstalledAppFlow.from_client_secrets_file(
+    def get_auth_url(self):
+        flow = Flow.from_client_secrets_file(
             self.client_secrets_file, scopes=self.scopes
         )
-        self.credentials = flow.run_local_server(port=8081)
+        flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true')
+        print("adding state")
+        flask.session['state'] = state
+        print(authorization_url)
+        return authorization_url
+    
+    def fetch_creds(self):
+        self.credentials = Credentials(
+        **flask.session['credentials'])
 
-    def fetch_data(self, part, fields, **kwargs):
+    def fetch_token(self, authorization_response):
+        flow = Flow.from_client_secrets_file(
+            self.client_secrets_file, self.scopes)
+        flow.fetch_token(authorization_response=authorization_response)
+        self.credentials = flow.credentials
+
+    def get_channel_data(self, part, mine, **kwargs):
         """Fetches data from the YouTube API."""
         if not self.credentials or not self.credentials.valid:
             if self.credentials and self.credentials.expired and self.credentials.refresh_token:
@@ -29,11 +45,9 @@ class YouTubeOAuth:
 
         youtube = googleapiclient.discovery.build("youtube", "v3", credentials=self.credentials)
         kwargs["part"] = part
-        kwargs["fields"] = fields
+        kwargs["mine"] = mine
         try:
-            #response = youtube.search().list(**kwargs).execute()
-            response = youtube.channels().list(part='snippet,statistics', mine=True).execute()
-            print(response)
+            response = youtube.channels().list(**kwargs).execute()
             return response
         except HttpError as error:
             print(f"An error occurred: {error}")
@@ -56,24 +70,14 @@ class YouTubeOAuth:
                 print("Error revoking credentials.")    
         else:
                 print("No credentials to revoke.")    
+    
+    def clear_credentials(self):
+        if 'credentials' in flask.session:
+            del flask.session['credentials']
+            self.credentials = None
 
 
-    # def get_authorization_url(self):
-    #     # This variable specifies the name of a file that contains the OAuth 2.0
-    #     # information for this application, including its client_id and client_secret.
-    #     CLIENT_SECRETS_FILE = os.path.join(ROOT_DIR, 'assets', 'client_secret.json')
-
-    #     # This OAuth 2.0 access scope allows for full read/write access to the
-    #     # authenticated user's account and requires requests to use an SSL connection.
-    #     SCOPES = ['https://www.googleapis.com/auth/youtube.readonly']
-        
-    #     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
-    #     flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
-    #     auth_url, state = flow.authorization_url(
-    #         access_type='offline',
-    #         include_granted_scopes='true'
-    #     )
-    #     return auth_url
+    
 
 
     # def set_credentials(self, authorization_response):
