@@ -14,7 +14,8 @@ from collections import defaultdict
 import numpy as np
 from scipy.ndimage import gaussian_gradient_magnitude
 import warnings; warnings.filterwarnings("ignore")
-
+from config.definitions import ROOT_DIR
+import os
 import pandas as pd
 
 # Added for word cloud
@@ -30,7 +31,7 @@ class Utils:
         self.data = []
         self.data_rec = []
         self.cloud_words = {}
-        self.yth = YoutubeHelper("API_KEY")
+        self.yth = YoutubeHelper("AIzaSyBcB__DHAUOVQWHAjkQMZt1T7lnPvjW4EM")
 
 
     #region Youtube API data cleaning  
@@ -440,7 +441,9 @@ class Utils:
     
     def load_word_cloud(self, data):
         # Create the mask
-        logo = np.array(Image.open('./assets/youtube_logo.png'))
+        youtube_logo = os.path.join(ROOT_DIR, 'assets', 'youtube_logo.png')
+
+        logo = np.array(Image.open(youtube_logo))
 
         # create mask  white is "masked out"
         logo_mask = logo.copy()
@@ -465,7 +468,7 @@ class Utils:
 
         # Create word cloud!
         stopwords = set(STOPWORDS)
-        stopwords.update(['short', 'ft', 'official','let','feat'])
+        stopwords.update(['short', 'shorts', 'ft', 'official','let','feat'])
 
         cloud = WordCloud(width=400, height=200, mask=logo_mask, background_color='#fcfcfc',
                     stopwords=stopwords, max_words=l_data,
