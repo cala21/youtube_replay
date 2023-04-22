@@ -4,6 +4,7 @@ from utils import Utils
 from YouTubeOAuthClient import YouTubeOAuthClient
 from dash import html
 from config.definitions import ROOT_DIR
+import dash_bootstrap_components as dbc
 import os
 import flask
 
@@ -61,41 +62,82 @@ def get_callbacks(app):
     @app.callback(
     Output('genre-graph', 'figure'),
     Input('date-picker', 'start_date'),
-    Input('date-picker', 'end_date'))
-    def update_genre_graph(start_date, end_date):
+    Input('date-picker', 'end_date'),
+    Input('g-dropdown', 'value'))
+    def update_genre_graph(start_date, end_date, value):
         data = utils.filter_by_date_range(start_date, end_date)
+        if value == None:
+            value="Y"
 
-        return utils.load_genre_graph(data)
+        return utils.load_genre_graph(data, freq=value)
     
     @app.callback(
     Output('time-graph', 'figure'),
     Input('date-picker', 'start_date'),
-    Input('date-picker', 'end_date'))
-    def update_genre_graph(start_date, end_date):
+    Input('date-picker', 'end_date'),
+    Input('tz-dropdown', 'value'))
+    def update_time_graph(start_date, end_date, value):
         data = utils.filter_by_date_range(start_date, end_date)
+        if value == None:
+            value="US/Pacific"
 
-        return utils.load_time_trend_graph(data)
+        return utils.load_time_trend_graph(data,tz=value)
     
     @app.callback(
-    [Output('word-cloud', 'src'),
-     Output('word-cloud', 'width'),
-     Output('word-cloud', 'height'),
-     Output('word-freq', 'figure')],
-    [Input('date-picker', 'start_date'),
-    Input('date-picker', 'end_date')])
+    Output('word-cloud', 'src'),
+    Output('word-cloud', 'width'),
+    Output('word-cloud', 'height'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
     def update_word_cloud(start_date, end_date):
         data = utils.filter_by_date_range(start_date, end_date)
-        output = utils.load_word_cloud(data)
-        print(output)
-        src, width, height, figure = output[0][0], output[0][1], output[0][2], output[1]
-        return src, width, height, figure
-            
+        src, width, height  = utils.load_word_cloud(data)
+        return src, width, height
+    
+    @app.callback(
+    Output('top-watch', 'data'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
+    def update_top_watch(start_date, end_date):
+        data = utils.filter_by_date_range(start_date, end_date)
+        return utils.top_watch(data)[0]
+    
+    @app.callback(
+    Output('container-rec', 'children'),
+    Input('date-picker', 'start_date'),
+    Input('date-picker', 'end_date'))
+    def update_rec_table(start_date, end_date):
+        return dbc.Table.from_dataframe(utils.load_recommendation(),
+                                        striped=True, 
+                                        bordered=True,
+                                        hover=True,
+                                        style={'font-family':'sans-serif'})
 
+    @app.callback(
+        Output("toggle-hist-rec", "is_open"),
+        [Input("toggle-hist-rec-button", "n_clicks")],
+        [State("toggle-hist-rec", "is_open")],
+    )
+    def toggle_rec(n, is_open):
+        if n:
+            return not is_open
+        return is_open
+    
+    @app.callback(
+        Output("toggle-word-cloud", "is_open"),
+        [Input("toggle-word-cloud-button", "n_clicks")],
+        [State("toggle-word-cloud", "is_open")],
+    )
+    def toggle_word_cloud(n, is_open):
+        if n:
+            return not is_open
+        return is_open
+    
     # Define a callback function to handle the button click event
     @app.callback(
-        Output("youtube-data", "children"),
-        [Input("btn-user", "n_clicks")],
-        )
+    Output("youtube-data", "children"),
+    [Input("btn-user", "n_clicks")],
+    )
     def connect_with_google(n_clicks):
         if n_clicks:
             if 'credentials' not in flask.session:
@@ -121,9 +163,9 @@ def get_callbacks(app):
         
     # Define a callback function to handle the button click event
     @app.callback(
-        Output("youtube-rec-data", "children"),
-        [Input("btn-rec-data", "n_clicks")],
-        )
+    Output("youtube-rec-data", "children"),
+    [Input("btn-rec-data", "n_clicks")],
+    )
     def get_rec_videos(n_clicks):
         if n_clicks:
                 video_data = youtube.get_rec_data()
@@ -134,9 +176,9 @@ def get_callbacks(app):
 
     # Define a callback function to handle the button click event
     @app.callback(
-        Output("btn-user", "n_clicks"),
-        [Input("btn-creds", "n_clicks")],
-        )
+    Output("btn-user", "n_clicks"),
+    [Input("btn-creds", "n_clicks")],
+    )
     def clear_credentials(n_clicks):
         if n_clicks:
             youtube.clear_credentials()

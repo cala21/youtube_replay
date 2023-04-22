@@ -45,7 +45,7 @@ layout = html.Div(
                     ' (jjalowiec3@gatech.edu)'
                 ]),
                 html.Li(children=[
-                    html.A('Christopher Hogde', href='mailto:chodge9@gatech.edu'),
+                    html.A('Christopher Hodge', href='mailto:chodge9@gatech.edu'),
                     ' (chodge9@gatech.edu)'
                 ]),
                 html.Li(children=[

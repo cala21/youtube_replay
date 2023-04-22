@@ -10,17 +10,17 @@ class YoutubeHelper:
         self.youtube = googleapiclient.discovery.build(\
             self._api_service_name, self._api_version, developerKey = self.auth_key)
 
-    def search(self):
+    def search(self, search_q, n=10):
         request = self.youtube.search().list(
             part="id,snippet",
             type='video',
-            q="Spider-Man",
-            videoDuration='short',
-            videoDefinition='high',
-            maxResults=1
+            q=search_q,
+            order="relevance",
+            maxResults=n
         )
-
         response = request.execute()
+        # with open("sample_search.json", "w") as outfile:
+        #     json.dump(response, outfile)
         return response
     
     def get_video_details(self, ids):

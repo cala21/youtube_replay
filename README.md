@@ -60,7 +60,7 @@ After having started the virtual environment run
 ```
 python run.py
 ```
-The web application should now be available at the address **http://127.0.0.1:8050/**
+The web application should now be available at the address **http://127.0.0.1:8080/**
 
 
 ## **Usage <a name="usage"></a>**

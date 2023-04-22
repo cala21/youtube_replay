@@ -9,3 +9,5 @@ Takeout/*
 .zshrc
 app/sample_category.json
 app/sample.json
+app/sample_search.json
+app/cache/*
