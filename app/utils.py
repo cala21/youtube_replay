@@ -31,7 +31,7 @@ class Utils:
         self.data = []
         self.data_rec = []
         self.cloud_words = {}
-        self.yth = YoutubeHelper("AIzaSyBW-aum9Xrbzf0IcQk0wbygZBMWvl8Y0ok")
+        self.yth = YoutubeHelper("Place API_KEY here")
 
 
     #region Youtube API data cleaning  
