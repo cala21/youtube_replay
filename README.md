@@ -29,11 +29,24 @@
 
 ## **About <a name = "about"></a>**
 
-YouTube Replay is an interactive data visualization tool for YouTube users to get information and useful insights on their YouTube Watch History. It leverages the [Youtube API](https://developers.google.com/youtube/v3/docs) to dynamically analyze the user history with respect to :
+YouTube Replay is an interactive data visualization tool that allows you to gain insights from your YouTube watch history. Simply upload your "watch_history.json" file and start exploring!
 
-* advertisements consumed
-* similarity with respect to another user
-* affinity to a genre/topic
+Features:
+*Top Watched Videos
+*Videos vs Ads Watched
+*Word Cloud based on History
+*Genres Watched Over Time
+*Popularity of Watched Videos
+*Watched Video - Time of Day Trend
+*Recommendations based on your viewing history and preferences! (not Youtube's algorithm)
+*OAuth 2.0 integration
+
+YouTube Replay is being built as a useful tool for researchers and data enthusiasts. The goal of the app is to provide a comprehensive view of your viewing history, including insights and trends.
+
+You can use this data to analyze your viewing habits on YouTube and gain valuable insights into your interests and behaviors.
+
+Whether you're taking a walk down the YouTube memory-lane or analyze your viewing history for research purposes, we hope that YouTube Replay is the perfect tool for you.
+
 
 ## **Getting Started <a name = "getting_started"></a>**
 This section covers the steps to have a hosting server, backend, and frontend up and running locally. See [deployment](#deployment) for notes on how to deploy the project on the cloud.
@@ -47,12 +60,33 @@ virtualenv .env && source .env/bin/activate && pip install -r requirements.txt
 ### **Downloading personal youtube history**
 Navigate to [Google Takeout](https://takeout.google.com/settings/takeout):
 
-* Create a new export
-* Deselect all
-* Search for "YouTube and YouTube Music" and select it
-* Click on "All youtube data included", deselect all and select "history"
-* Click on "Multiple Formats" and select json on History
-* Select your preferred method to receive the data and complete the export
+1.Go to Google Takeout at https://takeout.google.com/settings/takeout.
+2. Log in to your Google account which you need to analyze the YOuTube data for.
+3. Scroll down the page until you find "YouTube and YouTube Music" and select it.
+4. On the right side of the screen, you should see "All YouTube data included". Click on it.
+5. Deselect all and select only "history".
+5. Make sure to Select JSON format as the file type for the data.
+6. Customize any other options you want to (e.g., file size, delivery method).
+7. Click on "Create export".
+8. Wait for the export to be created. Depending on the size of your history, this may take several hours (usually few minutes).
+9. Once the export is ready, you will receive an email notification with a link to download your data.
+
+*Or save (as .json) the example file provided from https://storage.googleapis.com/youtubereplay-project.appspot.com/watch-history.json
+
+### **Here are step-by-step instructions on how to get a YouTube API key:
+
+1. Go to the Google Developers Console (https://console.developers.google.com/) and sign in with your Google account.
+2. Create a new project by clicking on the "Select a project" dropdown menu at the top of the page and then clicking on the "New project" button.
+3. Name your project and click on the "Create" button. You will be taken to the dashboard for your new project.
+4. Click on the "APIs & Services" menu item in the left sidebar.
+5. Click on the "Enable APIs and Services" button at the top of the page.
+6. Search for "YouTube Data API" and click on the result.
+7. Click on the "Enable" button.
+8. Go to the "Credentials" tab in the left sidebar.
+10. Click on the "Create credentials" dropdown button and select "API key".
+11. Copy your API key and keep it in a safe place.
+12. Replace this API key in the utils.py file :
+        self.yth = YoutubeHelper("Place API_KEY here")
 
 
 ### **Starting the local server**
@@ -60,12 +94,12 @@ After having started the virtual environment run
 ```
 python run.py
 ```
-The web application should now be available at the address **http://127.0.0.1:8080/**
+The web application should now be available at the address **http://127.0.0.1:8080/** or **http:/localhost:8080/**
 
 
 ## **Usage <a name="usage"></a>**
 
-Add notes about how to use the system.
+See the "How to Use?" section from the website at : **http://localhost:8080/help-page** or https://youtubereplay-project.wl.r.appspot.com/help-page
 
 ## **Deployment <a name = "deployment"></a>**
 
