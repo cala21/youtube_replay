@@ -32,14 +32,14 @@
 YouTube Replay is an interactive data visualization tool that allows you to gain insights from your YouTube watch history. Simply upload your "watch_history.json" file and start exploring!
 
 Features:
-*Top Watched Videos
-*Videos vs Ads Watched
-*Word Cloud based on History
-*Genres Watched Over Time
-*Popularity of Watched Videos
-*Watched Video - Time of Day Trend
-*Recommendations based on your viewing history and preferences! (not Youtube's algorithm)
-*OAuth 2.0 integration
+* Top Watched Videos
+* Videos vs Ads Watched
+* Word Cloud based on History
+* Genres Watched Over Time
+* Popularity of Watched Videos
+* Watched Video - Time of Day Trend
+* Recommendations based on your viewing history and preferences! (not Youtube's algorithm)
+* OAuth 2.0 integration
 
 YouTube Replay is being built as a useful tool for researchers and data enthusiasts. The goal of the app is to provide a comprehensive view of your viewing history, including insights and trends.
 
@@ -60,7 +60,7 @@ virtualenv .env && source .env/bin/activate && pip install -r requirements.txt
 ### **Downloading personal youtube history**
 Navigate to [Google Takeout](https://takeout.google.com/settings/takeout):
 
-1.Go to Google Takeout at https://takeout.google.com/settings/takeout.
+1. Go to Google Takeout at https://takeout.google.com/settings/takeout.
 2. Log in to your Google account which you need to analyze the YOuTube data for.
 3. Scroll down the page until you find "YouTube and YouTube Music" and select it.
 4. On the right side of the screen, you should see "All YouTube data included". Click on it.
@@ -73,7 +73,7 @@ Navigate to [Google Takeout](https://takeout.google.com/settings/takeout):
 
 *Or save (as .json) the example file provided from https://storage.googleapis.com/youtubereplay-project.appspot.com/watch-history.json
 
-### **Here are step-by-step instructions on how to get a YouTube API key:
+### Here are step-by-step instructions on how to get a YouTube API key:
 
 1. Go to the Google Developers Console (https://console.developers.google.com/) and sign in with your Google account.
 2. Create a new project by clicking on the "Select a project" dropdown menu at the top of the page and then clicking on the "New project" button.
@@ -83,9 +83,9 @@ Navigate to [Google Takeout](https://takeout.google.com/settings/takeout):
 6. Search for "YouTube Data API" and click on the result.
 7. Click on the "Enable" button.
 8. Go to the "Credentials" tab in the left sidebar.
-10. Click on the "Create credentials" dropdown button and select "API key".
-11. Copy your API key and keep it in a safe place.
-12. Replace this API key in the utils.py file :
+9. Click on the "Create credentials" dropdown button and select "API key".
+10. Copy your API key and keep it in a safe place.
+11. Replace this API key in the utils.py file :
         self.yth = YoutubeHelper("Place API_KEY here")
 
 
@@ -165,7 +165,10 @@ By default your application will be accessible to anyone in the world. To restri
 
 ## **Built Using <a name = "built_using"></a>**
 
-- [Pyhton](https://www.mongodb.com/) - Database
+- [Python](https://www.python.org) - Language
+- [Dash](https://dash.plotly.com) - framework for building data apps in Python
+- [OAuth 2.0](https://developers.google.com/identity/protocols/oauth2) - Using OAuth 2.0 to Access Google APIs
+
 
 ## **Authors <a name = "authors"></a>**
 
