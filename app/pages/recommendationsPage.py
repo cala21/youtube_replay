@@ -16,7 +16,8 @@ layout = html.Div(
 
         html.Div(
         [
-            html.Button("Get Connected User Info", id="btn-user"),
+            dbc.Button("Get Connected User Info", id="btn-user",className="mb-3",
+                    color="primary"),
             html.Div(id="youtube-data"),
         ]),
 
@@ -24,7 +25,8 @@ layout = html.Div(
 
         html.Div(
         [
-            html.Button("Get Recommended Videos for User", id="btn-rec-data"),
+            dbc.Button("Get Recommended Videos for User", id="btn-rec-data",className="mb-3",
+                    color="primary"),
             html.Div(id="youtube-rec-data"),
         ]),
 
@@ -32,7 +34,7 @@ layout = html.Div(
 
         html.Div(
         [
-            html.Button("Clear creds", id="btn-creds"),
+            dbc.Button("Clear creds", id="btn-creds", className="mb-3",color="primary"),
             html.Div(id="youtube-creds-clear"),
         ]),
     ]

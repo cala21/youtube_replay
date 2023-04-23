@@ -6,6 +6,7 @@ from googleapiclient.errors import HttpError
 import flask
 from cachetools import TTLCache
 from functools import wraps
+import random
 
 # Define global cache
 video_data_cache = {}
@@ -88,10 +89,15 @@ class YouTubeOAuthClient:
             recommendations = set()
             video_data = []
             video_response =[]
-            for video_id in video_ids:
+            random_video_ids = random.sample(video_ids, min(len(video_ids), 2))
+            #limiting to 5 video ids for making the search calls consistent across
+            for video_id in random_video_ids:
                 recommendations_response = youtube.search().list(relatedToVideoId=video_id, type='video', part='snippet').execute()
                 recommendations.update(item['id']['videoId'] for item in recommendations_response.get('items', []))
-            for recommendation_id in recommendations:
+            
+            random_recommendations_ids = random.sample(recommendations, min(len(video_ids), 10))
+
+            for recommendation_id in random_recommendations_ids:
                 video_response = youtube.videos().list(part='snippet,statistics', id=recommendation_id).execute()
                 video_items = video_response.get('items', [])     
 

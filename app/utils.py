@@ -31,7 +31,7 @@ class Utils:
         self.data = []
         self.data_rec = []
         self.cloud_words = {}
-        self.yth = YoutubeHelper("API_KEY")
+        self.yth = YoutubeHelper("AIzaSyBW-aum9Xrbzf0IcQk0wbygZBMWvl8Y0ok")
 
 
     #region Youtube API data cleaning  
@@ -406,14 +406,13 @@ class Utils:
         if len(video_data) > 0:
             return html.Div([
                 html.H1('Recommended YouTube Videos'),
-                html.Table([
+                dbc.Table([
                     html.Thead(html.Tr([
                         html.Th('Thumbnail'),
                         html.Th('Title'),
                         html.Th('Channel'),
                         html.Th('Views'),
                         html.Th('Likes'),
-                        html.Th('Dislikes')
                     ])),
                     html.Tbody([
                         html.Tr([

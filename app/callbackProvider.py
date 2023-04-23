@@ -143,7 +143,7 @@ def get_callbacks(app):
             if 'credentials' not in flask.session:
                 print("Credentials not in session.")
                 auth_url = youtube.get_auth_url()
-                return html.A('Connect with YouTube Account', href=auth_url)
+                return html.A('First, Connect your YouTube Account', href=auth_url)
             else:
                 flask.session['status'] = 'logged'
                 youtube.fetch_creds()
